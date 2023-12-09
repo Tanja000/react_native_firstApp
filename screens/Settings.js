@@ -31,7 +31,7 @@ const Settings = ({ navigation }) => {
     try {
         // Speichere die aktualisierte Liste
         await AsyncStorage.setItem('categories', JSON.stringify(categoriesToSave));
-        navigation.navigate('New', { refresh: true });
+        //navigation.navigate('New', { refresh: true });
 
     } catch (error) {
       console.error('Error saving categories:', error);

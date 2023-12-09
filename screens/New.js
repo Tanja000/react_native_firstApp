@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState} from 'react';
+import { View, Text} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SelectList } from 'react-native-dropdown-select-list';
-import { useRoute } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 import { colors } from '../styles/Colors'; 
@@ -11,20 +11,14 @@ import { textStyle } from '../styles/Text';
 let data = [];
 
 const New = () => {
-  
-  const route = useRoute();
-  const [selected, setSelected] = React.useState("");
+  const [selected, setSelected] = useState("");
   let storedCategories;
  
 
-  useEffect(() => {
-    loadCategories();
-    if (route.params?.refresh) {
-      data = [];
+  useFocusEffect(() => {
       loadCategories();
-      console.log('New Screen wird aktualisiert!');    
-    }
-  }, [route.params]);
+      console.log("wurde neu geladen");
+  });
 
   const loadCategories = async () => {
     try {
@@ -52,31 +46,22 @@ const New = () => {
 
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Choose a Category:</Text>
-      <SelectList 
-        setSelected={(val) => setSelected(val)} 
-        data={data} 
-        save="value"
-    />
+    <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
+      <View style={{ paddingTop: 20 }}></View>
+      <Text style={textStyle.textMain}>New</Text>
+
+      <View style={{ paddingTop: 20 }}></View>
+      <View style={textStyle.flatListContainer}>
+        <Text style={textStyle.textSmall}>Choose a Category:</Text>
+        <SelectList 
+          setSelected={(val) => setSelected(val)} 
+          data={data} 
+          save="value"
+          />
+      </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  label: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  selectedCategoryText: {
-    marginTop: 20,
-    fontSize: 16,
-  },
-});
 
 export default New;
