@@ -17,7 +17,9 @@ const Settings = () => {
 
   const loadCategories = async () => {
     try {
+
       const storedCategories = await AsyncStorage.getItem('categories');
+      console.log(storedCategories);
       if (storedCategories) {
         setCategories(JSON.parse(storedCategories));
       }
@@ -28,7 +30,9 @@ const Settings = () => {
 
   const saveCategories = async (categoriesToSave) => {
     try {
-      await AsyncStorage.setItem('categories', JSON.stringify(categoriesToSave));
+        // Speichere die aktualisierte Liste
+        await AsyncStorage.setItem('categories', JSON.stringify(categoriesToSave));
+
     } catch (error) {
       console.error('Error saving categories:', error);
     }
@@ -99,7 +103,7 @@ const Settings = () => {
           <Text style={textStyle.textButton}>DELETE ALL DATA</Text>
         </TouchableOpacity>
 
-        <View style={{ paddingTop: 1000 }}></View>
+        <View style={{ paddingTop: 100 }}></View>
     </View>
   );
 };

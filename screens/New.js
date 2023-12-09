@@ -1,16 +1,69 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SelectList } from 'react-native-dropdown-select-list'
+
+
 import { colors } from '../styles/Colors'; 
 import { textStyle } from '../styles/Text';
 
-const New = () => (
-  <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
-      <View style={{ paddingTop: 20 }}></View>
- 
-      <Text style={textStyle.textMain}>New</Text>
+const New = () => {
+  const [selected, setSelected] = React.useState("");
+  let storedCategories;
+  let data = [];
 
-      <View style={{ paddingTop: 1000 }}></View>
-  </View>
-);
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = async () => {
+    try {
+      const storedCategoriesString = await AsyncStorage.getItem('categories');
+      storedCategories = JSON.parse(storedCategoriesString);
+      if(storedCategories){
+        let counter = 0;
+        storedCategories.forEach((item) => {
+          const keyValue = {
+            key: String(counter),
+            value: item
+          };
+          data.push(keyValue);
+          counter++;
+        });
+      }
+      else {console.log("no data")}
+
+    } catch (error) {
+      console.error('Fehler beim Laden der Kategorien:', error);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.label}>Choose a Category:</Text>
+      <SelectList 
+        setSelected={(val) => setSelected(val)} 
+        data={data} 
+        save="value"
+    />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  label: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  selectedCategoryText: {
+    marginTop: 20,
+    fontSize: 16,
+  },
+});
 
 export default New;
