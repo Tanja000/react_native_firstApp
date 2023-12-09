@@ -7,10 +7,12 @@ import { SelectList } from 'react-native-dropdown-select-list'
 import { colors } from '../styles/Colors'; 
 import { textStyle } from '../styles/Text';
 
+let data = [];
+
 const New = () => {
   const [selected, setSelected] = React.useState("");
   let storedCategories;
-  let data = [];
+ 
 
   useEffect(() => {
     loadCategories();
