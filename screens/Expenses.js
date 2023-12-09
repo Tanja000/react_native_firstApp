@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { colors } from '../styles/Colors'; 
 
 const Expenses = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Text>Expenses Screen</Text>
+  <View style={{ flex: 1, backgroundColor: colors.backgroundPrimary }}>
   </View>
 );
 

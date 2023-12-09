@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { buttonStyle } from '../styles/buttons';
+import { buttonStyle } from '../styles/Buttons';
+import { textStyle } from '../styles/Text';
+import { colors } from '../styles/Colors'; 
+import { inputStyle } from '../styles/Inputs'; 
 
 const Settings = () => {
   const [categories, setCategories] = useState([]);
@@ -19,7 +22,7 @@ const Settings = () => {
         setCategories(JSON.parse(storedCategories));
       }
     } catch (error) {
-      console.error('Fehler beim Laden der Kategorien:', error);
+      console.error('Error loading categories:', error);
     }
   };
 
@@ -27,7 +30,7 @@ const Settings = () => {
     try {
       await AsyncStorage.setItem('categories', JSON.stringify(categoriesToSave));
     } catch (error) {
-      console.error('Fehler beim Speichern der Kategorien:', error);
+      console.error('Error saving categories:', error);
     }
   };
 
@@ -42,15 +45,15 @@ const Settings = () => {
 
   const clearCategories = () => {
     Alert.alert(
-      'Daten löschen',
-      'Möchtest du wirklich alle Daten löschen?',
+      'Delete Data',
+      'Are you sure you want to delete all data?',
       [
         {
-          text: 'Abbrechen',
+          text: 'Cancel',
           style: 'cancel',
         },
         {
-          text: 'Löschen',
+          text: 'Delete',
           onPress: async () => {
             await AsyncStorage.removeItem('categories');
             setCategories([]);
@@ -62,24 +65,38 @@ const Settings = () => {
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 20, marginBottom: 10 }}>Kategorien</Text>
+      <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
+ 
+      <Text style={textStyle.textMain}>Kategorien</Text>
+
+      <View style={{ paddingTop: 20 }}></View>
 
       <TextInput
-        style={buttonStyle.input}
-        placeholder="Neue Kategorie hinzufügen"
+        style={ inputStyle.primary}
+        placeholder="Enter new category"
         value={newCategory}
         onChangeText={(text) => setNewCategory(text)}
       />
-      <Button title="Hinzufügen" onPress={addCategory} style={buttonStyle.button} />
+      <View style={{ paddingTop: 10 }}></View>
+
+      <TouchableOpacity onPress={addCategory} style={buttonStyle.button} >
+        <Text style={textStyle.textButton}>ADD CATEGORY</Text>
+      </TouchableOpacity>
+
+      <View style={{ paddingTop: 10 }}></View>
 
       <FlatList
         data={categories}
-        renderItem={({ item }) => <Text style={{ marginTop: 10 }}>{item}</Text>}
+        renderItem={({ item }) => <Text style={textStyle.textSmall}>{item}</Text>}
         keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={textStyle.flatListContainer}
       />
 
-      <Button title="Alle Daten löschen" onPress={clearCategories} style={buttonStyle.button} />
+      <View style={{ paddingTop: 10 }}></View>
+
+      <TouchableOpacity onPress={clearCategories} style={buttonStyle.buttonDelete} >
+        <Text style={textStyle.textButton}>DELETE ALL DATA</Text>
+      </TouchableOpacity>
     </View>
   );
 };
