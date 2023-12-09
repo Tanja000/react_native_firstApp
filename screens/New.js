@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { SelectList } from 'react-native-dropdown-select-list'
+import { SelectList } from 'react-native-dropdown-select-list';
+import { useRoute } from '@react-navigation/native';
 
 
 import { colors } from '../styles/Colors'; 
@@ -10,17 +11,26 @@ import { textStyle } from '../styles/Text';
 let data = [];
 
 const New = () => {
+  
+  const route = useRoute();
   const [selected, setSelected] = React.useState("");
   let storedCategories;
  
 
   useEffect(() => {
     loadCategories();
-  }, []);
+    if (route.params?.refresh) {
+      data = [];
+      loadCategories();
+      console.log('New Screen wird aktualisiert!');    
+    }
+  }, [route.params]);
 
   const loadCategories = async () => {
     try {
+      console.log("get categories");
       const storedCategoriesString = await AsyncStorage.getItem('categories');
+      console.log(storedCategoriesString);
       storedCategories = JSON.parse(storedCategoriesString);
       if(storedCategories){
         let counter = 0;
@@ -39,6 +49,7 @@ const New = () => {
       console.error('Fehler beim Laden der Kategorien:', error);
     }
   };
+
 
   return (
     <View style={styles.container}>

@@ -6,7 +6,7 @@ import { textStyle } from '../styles/Text';
 import { colors } from '../styles/Colors'; 
 import { inputStyle } from '../styles/Inputs'; 
 
-const Settings = () => {
+const Settings = ({ navigation }) => {
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState('');
 
@@ -19,7 +19,6 @@ const Settings = () => {
     try {
 
       const storedCategories = await AsyncStorage.getItem('categories');
-      console.log(storedCategories);
       if (storedCategories) {
         setCategories(JSON.parse(storedCategories));
       }
@@ -32,6 +31,7 @@ const Settings = () => {
     try {
         // Speichere die aktualisierte Liste
         await AsyncStorage.setItem('categories', JSON.stringify(categoriesToSave));
+        navigation.navigate('New', { refresh: true });
 
     } catch (error) {
       console.error('Error saving categories:', error);
