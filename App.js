@@ -8,21 +8,24 @@ import Expenses from './screens/Expenses';
 import New from './screens/New';
 import Report from './screens/Report';
 import Settings from './screens/Settings';
+import { colors } from './styles/Colors'; 
 
 const Tab = createMaterialBottomTabNavigator();
 
 const App = () => (
   <NavigationContainer>
-    <Tab.Navigator>
+    <Tab.Navigator
+      barStyle={{ backgroundColor: colors.backgroundPrimary}}>
       <Tab.Screen 
         name="Expenses" 
         component={Expenses} 
         options={{
           tabBarLabel: 'Expenses',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="currency-eur" color={color} size={26} />
+            <MaterialCommunityIcons name="currency-usd" color={color} size={26} />
+           // <MaterialCommunityIcons name="currency-eur" color={color} size={26} />
           ),
-        }}  
+        }} 
         />
       <Tab.Screen 
         name="Report" 

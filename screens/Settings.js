@@ -66,37 +66,40 @@ const Settings = () => {
 
   return (
       <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
+        <View style={{ paddingTop: 20 }}></View>
  
-      <Text style={textStyle.textMain}>Kategorien</Text>
+        <Text style={textStyle.textMain}>Categories</Text>
 
-      <View style={{ paddingTop: 20 }}></View>
+        <View style={{ paddingTop: 20 }}></View>
 
-      <TextInput
-        style={ inputStyle.primary}
-        placeholder="Enter new category"
-        value={newCategory}
-        onChangeText={(text) => setNewCategory(text)}
-      />
-      <View style={{ paddingTop: 10 }}></View>
+       <TextInput
+          style={ inputStyle.primary}
+          placeholder="Enter new category"
+          value={newCategory}
+          onChangeText={(text) => setNewCategory(text)}
+        />
+        <View style={{ paddingTop: 10 }}></View>
 
-      <TouchableOpacity onPress={addCategory} style={buttonStyle.button} >
-        <Text style={textStyle.textButton}>ADD CATEGORY</Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={addCategory} style={buttonStyle.button} >
+          <Text style={textStyle.textButton}>ADD CATEGORY</Text>
+        </TouchableOpacity>
 
-      <View style={{ paddingTop: 10 }}></View>
+        <View style={{ paddingTop: 10 }}></View>
 
-      <FlatList
-        data={categories}
-        renderItem={({ item }) => <Text style={textStyle.textSmall}>{item}</Text>}
-        keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={textStyle.flatListContainer}
-      />
+        <FlatList
+          data={categories}
+          renderItem={({ item }) => <Text style={textStyle.textSmall}>{item}</Text>}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={textStyle.flatListContainer}
+        />
 
-      <View style={{ paddingTop: 10 }}></View>
+        <View style={{ paddingTop: 10 }}></View>
 
-      <TouchableOpacity onPress={clearCategories} style={buttonStyle.buttonDelete} >
-        <Text style={textStyle.textButton}>DELETE ALL DATA</Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={clearCategories} style={buttonStyle.buttonDelete} >
+          <Text style={textStyle.textButton}>DELETE ALL DATA</Text>
+        </TouchableOpacity>
+
+        <View style={{ paddingTop: 1000 }}></View>
     </View>
   );
 };
