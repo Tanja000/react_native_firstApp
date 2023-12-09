@@ -7,6 +7,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import { colors } from '../styles/Colors'; 
 import { textStyle } from '../styles/Text';
+import { buttonStyle } from '../styles/Buttons';
 
 let data = [];
 
@@ -51,14 +52,13 @@ const New = () => {
       <Text style={textStyle.textMain}>New</Text>
 
       <View style={{ paddingTop: 20 }}></View>
-      <View style={textStyle.flatListContainer}>
         <Text style={textStyle.textSmall}>Choose a Category:</Text>
-        <SelectList 
+        <SelectList
+          onSelect={() => console.log(selected)}
           setSelected={(val) => setSelected(val)} 
           data={data} 
           save="value"
           />
-      </View>
     </View>
   );
 };
