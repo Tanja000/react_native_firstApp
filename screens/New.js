@@ -23,7 +23,16 @@ const New = () => {
     category: '',
     name: '',
     description: '',
+    fequency: ''
   });
+
+  const frequencyData = [
+    {label: "None", value: 1},
+    {label: "daily", value: 2},
+    {label: "weekly", value: 3},
+    {label: "monthly", value: 4},
+    {label: "yearly", value: 5}
+  ];
 
   const handleInputChange = (field, value) => {
     setInputValues((prevInputValues) => ({
@@ -37,7 +46,8 @@ const New = () => {
     return (
       inputValues.category === '' ||
       inputValues.name === '' ||
-      inputValues.description === '' 
+      inputValues.description === '' ||
+      inputValues.frequency === ''
     );
   };
 
@@ -45,7 +55,8 @@ const New = () => {
     if (
       inputValues.category === '' ||
       inputValues.name === '' ||
-      inputValues.description === '' 
+      inputValues.description === '' ||
+      inputValues.frequency === ''
     ) {
       // Wenn nicht alle Felder ausgefüllt sind, zeige eine Meldung an
       Alert.alert('Error', 'Please fill in all fields before submitting.');
@@ -79,11 +90,22 @@ const New = () => {
     }
   };
 
-  const renderLabel = () => {
+  const renderLabel1 = () => {
     if (value || isFocus) {
       return (
         <Text style={[dropDownstyle.label, isFocus && { color: colors.colorDelete }]}>
           Select a Category
+        </Text>
+      );
+    }
+    return null;
+  };
+
+  const renderLabel2 = () => {
+    if (value || isFocus) {
+      return (
+        <Text style={[dropDownstyle.label, isFocus && { color: colors.colorDelete }]}>
+          Select a Frequency
         </Text>
       );
     }
@@ -130,7 +152,7 @@ const New = () => {
 
 
       <View style={dropDownstyle.container}>
-        {renderLabel()}
+        {renderLabel1()}
         <Dropdown
           style={[dropDownstyle.dropdown, isFocus && { borderColor: colors.colorDelete }]}
           placeholderStyle={dropDownstyle.placeholderStyle}
@@ -148,7 +170,7 @@ const New = () => {
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
           onChange={item => {
-            handleInputChange('category', item.label)
+            handleInputChange('frequency', item.label)
             setValue(item.value);
             setIsFocus(false);
           }}
@@ -179,7 +201,43 @@ const New = () => {
         value={inputValues.description}
         onChangeText={(text) => handleInputChange('description', text)}
       />
-        <View style={{ paddingTop: 10 }}></View>
+        <View style={{ paddingTop: 30 }}></View>
+
+        <View style={dropDownstyle.container}>
+        {renderLabel2()}
+        <Dropdown
+          style={[dropDownstyle.dropdown, isFocus && { borderColor: colors.colorDelete }]}
+          placeholderStyle={dropDownstyle.placeholderStyle}
+          selectedTextStyle={dropDownstyle.selectedTextStyle}
+          inputSearchStyle={dropDownstyle.inputSearchStyle}
+          iconStyle={dropDownstyle.iconStyle}
+          data={frequencyData}
+          search
+          maxHeight={300}
+          labelField="label"
+          valueField="value"
+          placeholder={!isFocus ? 'Select item' : '...'}
+          searchPlaceholder="Search..."
+          value={value}
+          onFocus={() => setIsFocus(true)}
+          onBlur={() => setIsFocus(false)}
+          onChange={item => {
+            handleInputChange('category', item.label)
+            setValue(item.value);
+            setIsFocus(false);
+          }}
+          renderLeftIcon={() => (
+            <AntDesign
+              style={dropDownstyle.icon}
+              color={isFocus ? colors.backgroundThird : colors.colorDelete}
+              name="Safety"
+              size={20}
+            />
+          )}
+        />
+      </View>
+
+      <View style={{ paddingTop: 10 }}></View>
 
         <TouchableOpacity onPress={handleSubmit}  style={buttonStyle.button}>
           <Text>Submit</Text>
