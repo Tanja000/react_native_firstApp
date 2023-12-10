@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
@@ -9,6 +9,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import { colors } from '../styles/Colors'; 
 import { textStyle } from '../styles/Text';
 import { buttonStyle } from '../styles/Buttons';
+import { inputStyle } from '../styles/Inputs';
 
 
 
@@ -17,6 +18,66 @@ const New = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState([]);
   const [isFocus, setIsFocus] = useState(false);
+
+  const [inputValues, setInputValues] = useState({
+    category: '',
+    name: '',
+    description: '',
+  });
+
+  const handleInputChange = (field, value) => {
+    setInputValues((prevInputValues) => ({
+      ...prevInputValues,
+      [field]: value,
+    }));
+  };
+
+  const isSubmitDisabled = () => {
+    // Überprüfen, ob alle Felder ausgefüllt sind
+    return (
+      inputValues.category === '' ||
+      inputValues.name === '' ||
+      inputValues.description === '' 
+    );
+  };
+
+  const handleSubmit = async () => {
+    if (
+      inputValues.category === '' ||
+      inputValues.name === '' ||
+      inputValues.description === '' 
+    ) {
+      // Wenn nicht alle Felder ausgefüllt sind, zeige eine Meldung an
+      Alert.alert('Error', 'Please fill in all fields before submitting.');
+      return;
+    }
+
+    try {
+      // Laden der vorhandenen Liste aus dem AsyncStorage
+      const existingListString = await AsyncStorage.getItem('expensesList');
+      const existingList = existingListString ? JSON.parse(existingListString) : [];
+
+      // Hinzufügen des neuen Dictionarys zur Liste
+      const newItem = { ...inputValues };
+      existingList.push(newItem);
+
+      console.log(existingList);
+      // Speichern der aktualisierten Liste im AsyncStorage
+      //await AsyncStorage.setItem('expensesList', JSON.stringify(existingList));
+
+      // Benachrichtigung, dass der Vorgang erfolgreich war
+      Alert.alert('Success', 'Item added to the list successfully.');
+
+       // Zurücksetzen der TextInputs
+      setInputValues({
+        name: '',
+        description: '',
+      });
+    } catch (error) {
+      console.error('Error saving item:', error);
+      Alert.alert('Error', 'Failed to save item. Please try again.');
+    }
+  };
 
   const renderLabel = () => {
     if (value || isFocus) {
@@ -87,6 +148,7 @@ const New = () => {
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
           onChange={item => {
+            handleInputChange('category', item.label)
             setValue(item.value);
             setIsFocus(false);
           }}
@@ -100,6 +162,28 @@ const New = () => {
           )}
         />
       </View>
+
+      <View style={{ paddingTop: 20 }}></View>
+
+      <TextInput
+        style={ inputStyle.primary}
+        placeholder="Enter a Name"
+        value={inputValues.name}
+        onChangeText={(text) => handleInputChange('name', text)}
+      />
+        <View style={{ paddingTop: 10 }}></View>
+
+      <TextInput
+        style={ inputStyle.primary}
+        placeholder="Enter a Description"
+        value={inputValues.description}
+        onChangeText={(text) => handleInputChange('description', text)}
+      />
+        <View style={{ paddingTop: 10 }}></View>
+
+        <TouchableOpacity onPress={handleSubmit}  style={buttonStyle.button}>
+          <Text>Submit</Text>
+        </TouchableOpacity>
        
       
     </View>
