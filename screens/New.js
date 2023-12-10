@@ -61,11 +61,6 @@ const New = () => {
     return number < 10 ? `0${number}` : `${number}`;
   };
 
-  const handleDateChange = (text) => {
-    validateDate(text);
-    setInputDate(text);   
-  };
-
   const validateDate = (text) => {
     const regex = /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}$/;
     setIsValid(regex.test(text));
@@ -279,7 +274,7 @@ const New = () => {
       <View>
       {renderLabel3()}
         <TextInput
-          style={[inputStyle.primary, !isValid && styles.invalidInput]}
+          style={[inputStyle.primary, !isValid && inputStyle.invalidInput]}
           placeholder="DD.MM.YYYY"
           value={inputDate}
           onChangeText={(text) => handleInputChange('date', text)}
