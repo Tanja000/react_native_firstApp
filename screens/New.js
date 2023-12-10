@@ -20,12 +20,13 @@ const New = () => {
   const [isFocus, setIsFocus] = useState(false);
   const [inputDate, setInputDate] = useState(formatDate(new Date()));
   const [isValid, setIsValid] = useState(true);
+  const [counter, setCounter] = useState(0);
 
   const [inputValues, setInputValues] = useState({
     category: '',
     name: '',
     description: '',
-    fequency: '',
+    frequency: '',
     date: ''
   });
 
@@ -41,7 +42,6 @@ const New = () => {
     if(field === 'date'){
       validateDate(value);
       setInputDate(value); 
-      console.log(value);
     }
     setInputValues((prevInputValues) => ({
       ...prevInputValues,
@@ -66,12 +66,19 @@ const New = () => {
     setIsValid(regex.test(text));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => { 
+
+    if(inputValues.date === ''){
+      inputValues.date = inputDate;
+    }
+    if(inputValues.frequency === ''){
+      inputValues.frequency = 'None';
+    }
+    
     if (
       inputValues.category === '' ||
       inputValues.name === '' ||
-      inputValues.description === '' ||
-      inputValues.frequency === ''
+      inputValues.description === ''
     ) {
       // Wenn nicht alle Felder ausgefüllt sind, zeige eine Meldung an
       Alert.alert('Error', 'Please fill in all fields before submitting.');
@@ -79,31 +86,30 @@ const New = () => {
     }
 
     try {
-
-      console.log("final values");
-      console.log(inputDate);
-      console.log(inputValues);
-      await AsyncStorage.removeItem('expensesList');
+     // await AsyncStorage.removeItem('expensesList');
       // Laden der vorhandenen Liste aus dem AsyncStorage
       const existingListString = await AsyncStorage.getItem('expensesList');
       const existingList = existingListString ? JSON.parse(existingListString) : [];
-      console.log(existingList);
 
       // Hinzufügen des neuen Dictionarys zur Liste
       const newItem = { ...inputValues };
       existingList.push(newItem);
 
-      console.log(existingList);
       // Speichern der aktualisierten Liste im AsyncStorage
-      //await AsyncStorage.setItem('expensesList', JSON.stringify(existingList));
+      await AsyncStorage.setItem('expensesList', JSON.stringify(existingList));
 
       // Benachrichtigung, dass der Vorgang erfolgreich war
       Alert.alert('Success', 'Item added to the list successfully.');
 
        // Zurücksetzen der TextInputs
+      setCounter(0);
+      setValue('Select item');
       setInputValues({
+        category: '',
         name: '',
         description: '',
+        frequency: '',
+        date: ''
       });
     } catch (error) {
       console.error('Error saving item:', error);
@@ -163,14 +169,6 @@ const New = () => {
       loadList();
     }, [])
   );
-
-  const handleSearch = (term) => {
-    setSearchTerm(term);
-    const filtered = filteredItems.filter((item) =>
-      item.toLowerCase().includes(term.toLowerCase())
-    );
-    setFilteredItems(filtered);
-  };
 
   return (
     <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
