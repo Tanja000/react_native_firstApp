@@ -18,12 +18,15 @@ const New = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState([]);
   const [isFocus, setIsFocus] = useState(false);
+  const [inputDate, setInputDate] = useState(formatDate(new Date()));
+  const [isValid, setIsValid] = useState(true);
 
   const [inputValues, setInputValues] = useState({
     category: '',
     name: '',
     description: '',
-    fequency: ''
+    fequency: '',
+    date: ''
   });
 
   const frequencyData = [
@@ -35,20 +38,37 @@ const New = () => {
   ];
 
   const handleInputChange = (field, value) => {
+    if(field === 'date'){
+      validateDate(value);
+      setInputDate(value); 
+      console.log(value);
+    }
     setInputValues((prevInputValues) => ({
       ...prevInputValues,
       [field]: value,
     }));
   };
 
-  const isSubmitDisabled = () => {
-    // Überprüfen, ob alle Felder ausgefüllt sind
-    return (
-      inputValues.category === '' ||
-      inputValues.name === '' ||
-      inputValues.description === '' ||
-      inputValues.frequency === ''
-    );
+  function formatDate(date){
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // Monate werden von 0 bis 11 gezählt
+    const year = date.getFullYear();
+
+    return `${padZero(day)}.${padZero(month)}.${year}`;
+  };
+
+  function padZero(number){
+    return number < 10 ? `0${number}` : `${number}`;
+  };
+
+  const handleDateChange = (text) => {
+    validateDate(text);
+    setInputDate(text);   
+  };
+
+  const validateDate = (text) => {
+    const regex = /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}$/;
+    setIsValid(regex.test(text));
   };
 
   const handleSubmit = async () => {
@@ -64,9 +84,15 @@ const New = () => {
     }
 
     try {
+
+      console.log("final values");
+      console.log(inputDate);
+      console.log(inputValues);
+      await AsyncStorage.removeItem('expensesList');
       // Laden der vorhandenen Liste aus dem AsyncStorage
       const existingListString = await AsyncStorage.getItem('expensesList');
       const existingList = existingListString ? JSON.parse(existingListString) : [];
+      console.log(existingList);
 
       // Hinzufügen des neuen Dictionarys zur Liste
       const newItem = { ...inputValues };
@@ -112,11 +138,21 @@ const New = () => {
     return null;
   };
 
+  const renderLabel3 = () => {
+    if (value || isFocus) {
+      return (
+        <Text style={[dropDownstyle.label, isFocus && { color: colors.colorDelete }]}>
+          Enter a Date (DD.MM.YYYY)
+        </Text>
+      );
+    }
+    return null;
+  };
+
+
   const loadList = async () => {
     try {
       const storedList = await AsyncStorage.getItem('categories');
-      console.log("stored List");
-      console.log(storedList);
       if (storedList !== null) {
         setFilteredItems(JSON.parse(storedList));
       }
@@ -170,7 +206,7 @@ const New = () => {
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
           onChange={item => {
-            handleInputChange('frequency', item.label)
+            handleInputChange('category', item.label)
             setValue(item.value);
             setIsFocus(false);
           }}
@@ -222,7 +258,7 @@ const New = () => {
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
           onChange={item => {
-            handleInputChange('category', item.label)
+            handleInputChange('frequency', item.label)
             setValue(item.value);
             setIsFocus(false);
           }}
@@ -237,12 +273,26 @@ const New = () => {
         />
       </View>
 
-      <View style={{ paddingTop: 10 }}></View>
+      <View style={{ paddingTop: 30 }}></View>
 
-        <TouchableOpacity onPress={handleSubmit}  style={buttonStyle.button}>
-          <Text>Submit</Text>
-        </TouchableOpacity>
+    
+      <View>
+      {renderLabel3()}
+        <TextInput
+          style={[inputStyle.primary, !isValid && styles.invalidInput]}
+          placeholder="DD.MM.YYYY"
+          value={inputDate}
+          onChangeText={(text) => handleInputChange('date', text)}
+        />
+        {!isValid && <Text style={textStyle.errorText}>Invalid date format</Text>}
+      </View>  
+
+      <View style={{ paddingTop: 20 }}></View>
        
+
+      <TouchableOpacity onPress={handleSubmit}  style={buttonStyle.button}>
+          <Text>Submit</Text>
+       </TouchableOpacity>
       
     </View>
   );

@@ -17,4 +17,16 @@ export const textStyle = {
         justifyContent: 'center',
         alignItems: 'center',
       },
+     dateInput: {
+        height: 40,
+        width: 200,
+        borderColor: 'gray',
+        borderWidth: 1,
+        paddingLeft: 10,
+        marginBottom: 10,
+      },
+      errorText: {
+        color: 'red',
+        marginBottom: 10,
+      },
   };
