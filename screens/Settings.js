@@ -1,50 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { buttonStyle } from '../styles/Buttons';
 import { textStyle } from '../styles/Text';
 import { colors } from '../styles/Colors'; 
 import { inputStyle } from '../styles/Inputs'; 
+
 
 const Settings = ({ navigation }) => {
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState('');
 
   useEffect(() => {
-    // Lade gespeicherte Kategorien beim Start der App
     loadCategories();
   }, []);
 
   const loadCategories = async () => {
     try {
-
       const storedCategories = await AsyncStorage.getItem('categories');
       if (storedCategories) {
-        setCategories(JSON.parse(storedCategories));
+        const categoriesArray = JSON.parse(storedCategories);
+        setCategories(categoriesArray);
       }
     } catch (error) {
       console.error('Error loading categories:', error);
     }
   };
 
-  const saveCategories = async (categoriesToSave) => {
+  const saveCategories = async (newCategory) => {
     try {
-        // Speichere die aktualisierte Liste
-        await AsyncStorage.setItem('categories', JSON.stringify(categoriesToSave));
-        //navigation.navigate('New', { refresh: true });
-
+      const updatedCategories = [...categories, newCategory];
+      setCategories(updatedCategories);
+      await AsyncStorage.setItem('categories', JSON.stringify(updatedCategories));
+      console.log('Category saved successfully.');
     } catch (error) {
-      console.error('Error saving categories:', error);
+      console.error('Error saving category:', error);
     }
   };
 
   const addCategory = () => {
-    if (newCategory.trim() !== '') {
-      const updatedCategories = [...categories, newCategory];
-      setCategories(updatedCategories);
-      saveCategories(updatedCategories);
-      setNewCategory('');
-    }
+    const categoryToAdd = { label: newCategory, value: categories.length + 1};
+    saveCategories(categoryToAdd);
   };
 
   const clearCategories = () => {
@@ -67,6 +64,7 @@ const Settings = ({ navigation }) => {
       { cancelable: false }
     );
   };
+
 
   return (
       <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
@@ -92,9 +90,10 @@ const Settings = ({ navigation }) => {
 
         <FlatList
           data={categories}
-          renderItem={({ item }) => <Text style={textStyle.textSmall}>{item}</Text>}
-          keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={textStyle.flatListContainer}
+          renderItem={({ item }) => (
+            <Text>{` ${item.label}`}</Text>
+          )}
+          keyExtractor={(item) => item.value.toString()}
         />
 
         <View style={{ paddingTop: 10 }}></View>
