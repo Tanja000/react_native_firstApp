@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import { StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-searchable-dropdown-kj';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
@@ -10,6 +9,7 @@ import { colors } from '../styles/Colors';
 import { textStyle } from '../styles/Text';
 import { buttonStyle } from '../styles/Buttons';
 import { inputStyle } from '../styles/Inputs';
+import { dropDownstyle } from '../styles/Dropdown';
 
 
 
@@ -82,8 +82,8 @@ const New = () => {
   const renderLabel = () => {
     if (value || isFocus) {
       return (
-        <Text style={[styles.label, isFocus && { color: colors.colorDelete }]}>
-          Select Category
+        <Text style={[dropDownstyle.label, isFocus && { color: colors.colorDelete }]}>
+          Select a Category
         </Text>
       );
     }
@@ -126,17 +126,17 @@ const New = () => {
       
       <Text style={textStyle.textMain}>New</Text>
 
-      <View style={{ paddingTop: 20 }}></View>
+      <View style={{ paddingTop: 30 }}></View>
 
 
-      <View style={styles.container}>
+      <View style={dropDownstyle.container}>
         {renderLabel()}
         <Dropdown
-          style={[styles.dropdown, isFocus && { borderColor: colors.colorDelete }]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
+          style={[dropDownstyle.dropdown, isFocus && { borderColor: colors.colorDelete }]}
+          placeholderStyle={dropDownstyle.placeholderStyle}
+          selectedTextStyle={dropDownstyle.selectedTextStyle}
+          inputSearchStyle={dropDownstyle.inputSearchStyle}
+          iconStyle={dropDownstyle.iconStyle}
           data={filteredItems}
           search
           maxHeight={300}
@@ -154,7 +154,7 @@ const New = () => {
           }}
           renderLeftIcon={() => (
             <AntDesign
-              style={styles.icon}
+              style={dropDownstyle.icon}
               color={isFocus ? colors.backgroundThird : colors.colorDelete}
               name="Safety"
               size={20}
@@ -191,43 +191,3 @@ const New = () => {
 };
 
 export default New;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'white',
-    padding: 16,
-  },
-  dropdown: {
-    height: 50,
-    borderColor: 'gray',
-    borderWidth: 0.5,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-  },
-  icon: {
-    marginRight: 5,
-  },
-  label: {
-    position: 'absolute',
-    backgroundColor: 'white',
-    left: 22,
-    top: 8,
-    zIndex: 999,
-    paddingHorizontal: 8,
-    fontSize: 14,
-  },
-  placeholderStyle: {
-    fontSize: 16,
-  },
-  selectedTextStyle: {
-    fontSize: 16,
-  },
-  iconStyle: {
-    width: 20,
-    height: 20,
-  },
-  inputSearchStyle: {
-    height: 40,
-    fontSize: 16,
-  },
-});
