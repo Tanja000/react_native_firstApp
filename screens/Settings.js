@@ -28,12 +28,28 @@ const Settings = ({ navigation }) => {
     }
   };
 
+
   const saveCategories = async (newCategory) => {
     try {
-      const updatedCategories = [...categories, newCategory];
-      setCategories(updatedCategories);
-      await AsyncStorage.setItem('categories', JSON.stringify(updatedCategories));
-      console.log('Category saved successfully.');
+        // Lade vorhandene Kategorien aus dem Speicher
+        const storedCategories = await AsyncStorage.getItem('categories');
+        const categories = storedCategories ? JSON.parse(storedCategories) : [];
+        // Überprüfe, ob der Wert in der Kategorie bereits existiert
+      if(categories != null && categories.some(e => e.label == newCategory.label)) {
+          // Zeige einen Alert an, wenn die Kategorie bereits existiert
+          Alert.alert(
+            'Error',
+            'This category already exists.',
+            [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+            { cancelable: false }
+          );
+        } 
+       else {
+        const updatedCategories = [...categories, newCategory];
+        setCategories(updatedCategories);
+        await AsyncStorage.setItem('categories', JSON.stringify(updatedCategories));
+        console.log('Category saved successfully.');
+      }
     } catch (error) {
       console.error('Error saving category:', error);
     }
