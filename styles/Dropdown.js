@@ -1,12 +1,22 @@
 import { colors } from './Colors'; 
 
 export const dropDownstyle = {
+    containerOuter: {
+      padding: 5,
+    },
     container: {
         backgroundColor: colors.backgroundSecondary,
         borderColor: colors.colorDelete,
         borderWidth: 1, 
         borderRadius: 20, 
         padding: 10,
+        justifyContent: 'space-between',
+        marginBottom: 8,
+      },
+      rowContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 4,
       },
       dropdown: {
         height: 50,

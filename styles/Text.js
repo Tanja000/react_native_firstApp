@@ -1,6 +1,11 @@
 import { colors } from './Colors'; 
 
 export const textStyle = {
+    label: {
+        fontWeight: 'bold',
+        marginRight: 8,
+        color: colors.primaryText, 
+      },
     textMain: {
         fontSize: 20, 
         color: colors.primaryText, 

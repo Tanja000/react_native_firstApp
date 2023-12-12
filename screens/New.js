@@ -21,10 +21,12 @@ const New = () => {
   const [inputDate, setInputDate] = useState(formatDate(new Date()));
   const [isValid, setIsValid] = useState(true);
   const [counter, setCounter] = useState(0);
+  const [amount, setAmount] = useState('');
 
   const [inputValues, setInputValues] = useState({
     category: '',
     name: '',
+    amount: '',
     description: '',
     frequency: '',
     date: ''
@@ -38,10 +40,16 @@ const New = () => {
     {label: "yearly", value: 5}
   ];
 
+
   const handleInputChange = (field, value) => {
     if(field === 'date'){
       validateDate(value);
       setInputDate(value); 
+    }
+    if(field === 'amount'){
+      // Nur Zahlen zulassen
+      const numericValue = value.replace(/[^0-9]/g, '');
+      setAmount(numericValue);
     }
     setInputValues((prevInputValues) => ({
       ...prevInputValues,
@@ -68,6 +76,9 @@ const New = () => {
 
   const handleSubmit = async () => { 
 
+    if(inputValues.amount === ''){
+      inputValues.amount = 0;
+    }
     if(inputValues.date === ''){
       inputValues.date = inputDate;
     }
@@ -78,7 +89,8 @@ const New = () => {
     if (
       inputValues.category === '' ||
       inputValues.name === '' ||
-      inputValues.description === ''
+      inputValues.description === '' ||
+      inputValues.amount === ''
     ) {
       // Wenn nicht alle Felder ausgefüllt sind, zeige eine Meldung an
       Alert.alert('Error', 'Please fill in all fields before submitting.');
@@ -91,9 +103,15 @@ const New = () => {
       const existingListString = await AsyncStorage.getItem('expensesList');
       const existingList = existingListString ? JSON.parse(existingListString) : [];
 
+      //index hinzufügen
+      inputValues.index = existingList.length + 1;
+      
+
       // Hinzufügen des neuen Dictionarys zur Liste
       const newItem = { ...inputValues };
       existingList.push(newItem);
+
+      console.log(existingList);
 
       // Speichern der aktualisierten Liste im AsyncStorage
       await AsyncStorage.setItem('expensesList', JSON.stringify(existingList));
@@ -103,10 +121,11 @@ const New = () => {
 
        // Zurücksetzen der TextInputs
       setCounter(0);
-      setValue('Select item');
+      setValue('Select Category');
       setInputValues({
         category: '',
         name: '',
+        amount: '',
         description: '',
         frequency: '',
         date: ''
@@ -193,7 +212,7 @@ const New = () => {
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? 'Select item' : '...'}
+          placeholder={!isFocus ? 'Select Category' : '...'}
           searchPlaceholder="Search..."
           value={value}
           onFocus={() => setIsFocus(true)}
@@ -222,7 +241,17 @@ const New = () => {
         value={inputValues.name}
         onChangeText={(text) => handleInputChange('name', text)}
       />
-        <View style={{ paddingTop: 10 }}></View>
+      <View style={{ paddingTop: 10 }}></View>
+
+
+      <TextInput
+        style={ inputStyle.primary}
+        placeholder="Enter the Amount"
+        keyboardType="numeric"
+        value={inputValues.amount}
+        onChangeText={(text) => handleInputChange('amount', text)}
+      />
+      <View style={{ paddingTop: 10 }}></View>  
 
       <TextInput
         style={ inputStyle.primary}
@@ -245,7 +274,7 @@ const New = () => {
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? 'Select item' : '...'}
+          placeholder={!isFocus ? 'Select Frequency' : '...'}
           searchPlaceholder="Search..."
           value={value}
           onFocus={() => setIsFocus(true)}
