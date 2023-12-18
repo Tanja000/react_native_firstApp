@@ -102,8 +102,14 @@ const New = () => {
       const existingListString = await AsyncStorage.getItem('expensesList');
       const existingList = existingListString ? JSON.parse(existingListString) : [];
 
+       // Annahme: Die Index-Werte sind in jedem Element des Arrays vorhanden
+      const indexesAsNumbers = existingList.map(item => parseInt(item.index, 10));
+
+      // Finde den höchsten Index
+      const highestIndex = Math.max(...indexesAsNumbers);
+
       //index hinzufügen
-      inputValues.index = existingList.length + 1;
+      inputValues.index = highestIndex + 1;
       
 
       // Hinzufügen des neuen Dictionarys zur Liste

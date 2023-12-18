@@ -11,6 +11,7 @@ import { dropDownstyle } from '../styles/Dropdown';
 
 const Expenses = () => {
     const [data, setData] = useState([]);
+    const [totalAmount, setTotalAmount] = useState(0);
 
     // This effect will run when the screen gains focus
     useFocusEffect(
@@ -25,6 +26,8 @@ const Expenses = () => {
         if (storedData !== null) {
           const parsedData = JSON.parse(storedData);
           setData(parsedData);
+          const total = parsedData.reduce((accumulator, item) => accumulator + parseFloat(item.amount), 0);
+          setTotalAmount(total);
         }
         else { setData([]); }
       } catch (error) {
@@ -60,6 +63,7 @@ const Expenses = () => {
             const parsedData = JSON.parse(storedData);
             const updatedData = parsedData.filter((item) => item.index !== index);
             await AsyncStorage.setItem('expensesList', JSON.stringify(updatedData));
+            fetchData();
           }
     
           // Remove the item from state
@@ -77,7 +81,13 @@ const Expenses = () => {
     
           <Text style={textStyle.textMain}>Expenses</Text>
 
-          <View style={{ paddingTop: 20 }}></View>
+          <View style={{ paddingTop: 40 }}></View>
+
+          <View style={textStyle.textMain}>
+            <Text style={textStyle.label}>Total Amount: {totalAmount}</Text>
+          </View>
+
+          <View style={{ paddingTop: 40 }}></View>
 
           <View style={dropDownstyle.containerOuter}>
           <FlatList
