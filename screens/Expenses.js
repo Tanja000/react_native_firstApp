@@ -8,6 +8,7 @@ import { colors } from '../styles/Colors';
 import { textStyle } from '../styles/Text';
 import { dropDownstyle } from '../styles/Dropdown';
 
+
 const Expenses = () => {
     const [data, setData] = useState([]);
 
@@ -20,19 +21,18 @@ const Expenses = () => {
   
     const fetchData = async () => {
       try {
-    //    await AsyncStorage.removeItem('expensesList');
         const storedData = await AsyncStorage.getItem('expensesList');
         if (storedData !== null) {
           const parsedData = JSON.parse(storedData);
           setData(parsedData);
         }
+        else { setData([]); }
       } catch (error) {
         console.error('Fehler beim Laden der Daten: ', error);
       }
     };
   
-    const deleteItem = async (index) => {
-      console.log("delete")
+    const deleteItem = async (index, data) => {
       Alert.alert(
         'Delete Data',
         'Are you sure you want to delete this item?',
@@ -44,29 +44,31 @@ const Expenses = () => {
           {
             text: 'Delete',
             onPress: async () => {
-              try {
-                // Remove the item from AsyncStorage
-                const storedData = await AsyncStorage.getItem('expensesList');
-                if (storedData !== null) {
-                  const parsedData = JSON.parse(storedData);
-                  const updatedData = parsedData.filter((item) => item.index !== index);
-                  console.log(index)
-                  console.log(updatedData);
-                  await AsyncStorage.setItem('expensesList', JSON.stringify(updatedData));
-                }
-          
-                // Remove the item from state
-                const newData = data.filter((item) => item.index !== index);
-                setData(newData);
-              } catch (error) {
-                console.error('Fehler beim Löschen des Elements: ', error);
-              }
+              deleteExpenseListItem(index);
             },
           },
         ],
         { cancelable: false }
       );
     };
+
+    async function deleteExpenseListItem(index){
+      try {
+          // Remove the item from AsyncStorage
+          const storedData = await AsyncStorage.getItem('expensesList');
+          if (storedData !== null) {
+            const parsedData = JSON.parse(storedData);
+            const updatedData = parsedData.filter((item) => item.index !== index);
+            await AsyncStorage.setItem('expensesList', JSON.stringify(updatedData));
+          }
+    
+          // Remove the item from state
+          const newData = data.filter((item) => item.index !== index);
+          setData(newData);
+        } catch (error) {
+          console.error('Fehler beim Löschen des Elements: ', error);
+        }
+      }
 
 
     return(

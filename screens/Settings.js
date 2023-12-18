@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -11,10 +12,29 @@ import { inputStyle } from '../styles/Inputs';
 const Settings = ({ navigation }) => {
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState('');
+  const [data, setData] = useState([]);
 
-  useEffect(() => {
-    loadCategories();
-  }, []);
+  // This effect will run when the screen gains focus
+  useFocusEffect(
+      React.useCallback(() => {
+        loadCategories();
+       // fetchData();
+      }, [])
+    );
+
+  /*  const fetchData = async () => {
+      try {
+    //    await AsyncStorage.removeItem('expensesList');
+        const storedData = await AsyncStorage.getItem('expensesList');
+        if (storedData !== null) {
+          const parsedData = JSON.parse(storedData);
+          setData(parsedData);
+        }
+      } catch (error) {
+        console.error('Fehler beim Laden der Daten: ', error);
+      }
+    };*/
+    
 
   const loadCategories = async () => {
     try {
@@ -55,12 +75,68 @@ const Settings = ({ navigation }) => {
     }
   };
 
-  const addCategory = () => {
-    const categoryToAdd = { label: newCategory, value: categories.length + 1};
+  async function addCategory(){
+    const categoryToAdd = { label: newCategory};
     saveCategories(categoryToAdd);
   };
 
-  const clearCategories = () => {
+
+const areCategoriesEqual = (category, expense) => {
+  return category.label === expense.category;
+};
+
+async function deleteCategoryItem(label){
+  let storedCategories = JSON.parse(await AsyncStorage.getItem('categories')) || [];
+
+  try {
+      // Remove the item from AsyncStorage
+      if (storedCategories !== null) {
+        const updatedCategory = storedCategories.filter((item) => item.label !== label);
+        setCategories(updatedCategory);
+        await AsyncStorage.setItem('categories', JSON.stringify(updatedCategory));
+         // Remove the item from state
+        const newCategory = categories.filter((item) => item.label !== label);
+        setData(newCategory);
+        
+      }
+    } catch (error) {
+      console.error('Fehler beim Löschen des Elements: ', error);
+    }
+  }
+
+
+  const deleteCategories = () => {
+    Alert.alert(
+      'Delete Categories',
+      'Are you sure you want to delete all unused categories?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: async () => {
+
+            let storedCategories = JSON.parse(await AsyncStorage.getItem('categories')) || [];
+            const storedExpenses = JSON.parse(await AsyncStorage.getItem('expensesList')) || [];
+            
+            const unusedCategories = storedCategories.filter(category => {
+                // Prüfe, ob ein Element in storedExpenses existiert, das gleich category ist
+                return !storedExpenses.some(expense => areCategoriesEqual(category, expense));
+              });
+
+            for (const currentObj of unusedCategories) {
+               await deleteCategoryItem(currentObj.label);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  async function deleteAllData(label){
     Alert.alert(
       'Delete Data',
       'Are you sure you want to delete all data?',
@@ -74,13 +150,13 @@ const Settings = ({ navigation }) => {
           onPress: async () => {
             await AsyncStorage.removeItem('categories');
             setCategories([]);
+            await AsyncStorage.removeItem('expensesList');
           },
         },
       ],
       { cancelable: false }
     );
   };
-
 
   return (
       <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
@@ -109,16 +185,21 @@ const Settings = ({ navigation }) => {
           renderItem={({ item }) => (
             <Text>{` ${item.label}`}</Text>
           )}
-          keyExtractor={(item) => item.value.toString()}
+          keyExtractor={(item) => item.label.toString()}
         />
+
+        <View style={{ paddingTop: 200 }}></View>
+
+        <TouchableOpacity onPress={deleteCategories} style={buttonStyle.buttonDelete} >
+          <Text style={textStyle.textButton}>DELETE UNUSED CATEGORIES</Text>
+        </TouchableOpacity>
 
         <View style={{ paddingTop: 10 }}></View>
 
-        <TouchableOpacity onPress={clearCategories} style={buttonStyle.buttonDelete} >
+        <TouchableOpacity onPress={deleteAllData} style={buttonStyle.buttonDelete} >
           <Text style={textStyle.textButton}>DELETE ALL DATA</Text>
         </TouchableOpacity>
 
-        <View style={{ paddingTop: 100 }}></View>
     </View>
   );
 };

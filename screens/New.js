@@ -15,7 +15,6 @@ import { dropDownstyle } from '../styles/Dropdown';
 
 const New = () => {
   const [value, setValue] = useState("Select option...");
-  const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState([]);
   const [isFocus, setIsFocus] = useState(false);
   const [inputDate, setInputDate] = useState(formatDate(new Date()));
