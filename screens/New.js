@@ -311,8 +311,8 @@ const New = () => {
       <View style={{ paddingTop: 20 }}></View>
        
 
-      <TouchableOpacity onPress={handleSubmit}  style={buttonStyle.button}>
-          <Text>Submit</Text>
+      <TouchableOpacity onPress={handleSubmit}  style={buttonStyle.buttonDelete}>
+          <Text style={textStyle.textButton}>SUBMIT</Text>
        </TouchableOpacity>
       
     </View>
