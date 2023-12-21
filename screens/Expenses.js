@@ -25,6 +25,7 @@ const Expenses = () => {
         const storedData = await AsyncStorage.getItem('expensesList');
         if (storedData !== null) {
           const parsedData = JSON.parse(storedData);
+          console.log(parsedData);
           setData(parsedData);
           const total = parsedData.reduce((accumulator, item) => accumulator + parseFloat(item.amount), 0);
           setTotalAmount(total);
@@ -81,7 +82,7 @@ const Expenses = () => {
     
           <Text style={textStyle.textMain}>Expenses</Text>
 
-          <View style={{ paddingTop: 40 }}></View>
+          <View style={{ paddingTop: 20 }}></View>
 
           <View style={textStyle.textMain}>
             <Text style={textStyle.label}>Total Amount: {totalAmount}</Text>
@@ -114,7 +115,7 @@ const Expenses = () => {
                   </View>
                 </View>
               )}
-              keyExtractor={(item) => item.toString()}
+             // keyExtractor={(item) => item.toString()}
             />
           </View>
 
