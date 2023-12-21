@@ -55,6 +55,7 @@ const Settings = ({ navigation }) => {
         const storedCategories = await AsyncStorage.getItem('categories');
         const categories = storedCategories ? JSON.parse(storedCategories) : [];
         // Überprüfe, ob der Wert in der Kategorie bereits existiert
+        //TANJA TODO: Leerzeichen beim check im value entfernen
       if(categories != null && categories.some(e => e.label == newCategory.label)) {
           // Zeige einen Alert an, wenn die Kategorie bereits existiert
           Alert.alert(

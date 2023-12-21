@@ -38,7 +38,6 @@ const New = () => {
     const currentDate = formatDate(date) || formatDate(new Date());
     inputValues.date = currentDate;
     setInputDate(currentDate);
-    console.log(currentDate);
     hideDatePicker();
   };
 
@@ -119,15 +118,17 @@ const New = () => {
       const existingListString = await AsyncStorage.getItem('expensesList');
       const existingList = existingListString ? JSON.parse(existingListString) : [];
 
-       // Annahme: Die Index-Werte sind in jedem Element des Arrays vorhanden
-      const indexesAsNumbers = existingList.map(item => parseInt(item.index, 10));
-
-      // Finde den höchsten Index
-      const highestIndex = Math.max(...indexesAsNumbers);
-
-      //index hinzufügen
-      inputValues.index = highestIndex + 1;
-      
+      if(existingListString.length === 0 || existingList.length === 0){
+        inputValues.index = 1;
+      }
+      else{
+        // Annahme: Die Index-Werte sind in jedem Element des Arrays vorhanden
+        const indexesAsNumbers = existingList.map(item => parseInt(item.index, 10));
+        // Finde den höchsten Index
+        const highestIndex = Math.max(...indexesAsNumbers);
+        //index hinzufügen
+        inputValues.index = highestIndex + 1;
+      }
 
       // Hinzufügen des neuen Dictionarys zur Liste
       const newItem = { ...inputValues };
@@ -151,7 +152,6 @@ const New = () => {
         date: ''
       });
     } catch (error) {
-      console.log("error hier")
       console.error('Error saving item:', error);
       Alert.alert('Error', 'Failed to save item. Please try again.');
     }

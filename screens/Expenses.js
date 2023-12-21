@@ -36,7 +36,7 @@ const Expenses = () => {
       }
     };
   
-    const deleteItem = async (index, data) => {
+    const deleteItem = async (index) => {
       Alert.alert(
         'Delete Data',
         'Are you sure you want to delete this item?',
@@ -103,12 +103,15 @@ const Expenses = () => {
                   </View>
                   <View style={dropDownstyle.rowContainer}>
                     <Text style={textStyle.label}>Amount:</Text>
-                    <Text>{` ${item.amount}`}</Text>
-   
+                    <Text>{` ${item.amount}`}</Text> 
                   </View>
                   <View style={dropDownstyle.rowContainer}>
                     <Text style={textStyle.label}>Date:</Text>
                     <Text>{` ${item.date}`}</Text>
+                  </View>
+                  <View style={dropDownstyle.rowContainer}>
+                    <Text style={textStyle.label}>Category:</Text>
+                    <Text>{` ${item.category}`}</Text>
                   </View>
                   <View style={dropDownstyle.rowContainer}>
                     <Text>{` ${item.description}`}</Text>
