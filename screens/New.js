@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { Dropdown } from 'react-native-searchable-dropdown-kj';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+//import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 import { colors } from '../styles/Colors'; 
 import { textStyle } from '../styles/Text';
@@ -21,6 +23,25 @@ const New = () => {
   const [isValid, setIsValid] = useState(true);
   const [counter, setCounter] = useState(0);
   const [amount, setAmount] = useState('');
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = (date) => {
+    const currentDate = formatDate(date) || formatDate(new Date());
+    inputValues.date = currentDate;
+    setInputDate(currentDate);
+    console.log(currentDate);
+    hideDatePicker();
+  };
+
 
   const [inputValues, setInputValues] = useState({
     category: '',
@@ -191,10 +212,13 @@ const New = () => {
 
   return (
     <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
+     <ScrollView >
 
       <View style={{ paddingTop: 20 }}></View>
       
       <Text style={textStyle.textMain}>New</Text>
+
+
 
       <View style={{ paddingTop: 30 }}></View>
 
@@ -297,7 +321,6 @@ const New = () => {
 
       <View style={{ paddingTop: 30 }}></View>
 
-    
       <View>
       {renderLabel3()}
         <TextInput
@@ -307,7 +330,20 @@ const New = () => {
           onChangeText={(text) => handleInputChange('date', text)}
         />
         {!isValid && <Text style={textStyle.errorText}>Invalid date format</Text>}
-      </View>  
+      </View> 
+
+      <SafeAreaView>     
+      <TouchableOpacity onPress={showDatePicker}  style={buttonStyle.buttonDelete}>
+          <Text style={textStyle.textButton}>DATE</Text>
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
+          />
+       </TouchableOpacity>
+       </SafeAreaView> 
+
 
       <View style={{ paddingTop: 20 }}></View>
        
@@ -315,7 +351,8 @@ const New = () => {
       <TouchableOpacity onPress={handleSubmit}  style={buttonStyle.buttonDelete}>
           <Text style={textStyle.textButton}>SUBMIT</Text>
        </TouchableOpacity>
-      
+
+       </ScrollView>
     </View>
   );
 };
