@@ -1,8 +1,9 @@
 import React, { useState} from 'react';
-import { View, Text, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, Alert} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons'; 
+import { ScrollView } from 'react-native-virtualized-view';
 
 import { colors } from '../styles/Colors'; 
 import { textStyle } from '../styles/Text';
@@ -76,6 +77,7 @@ const Expenses = () => {
 
 
     return(
+      <ScrollView>
       <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
           <View style={{ paddingTop: 20 }}></View>
     
@@ -89,6 +91,7 @@ const Expenses = () => {
 
           <View style={{ paddingTop: 40 }}></View>
 
+          
           <View style={dropDownstyle.containerOuter}>
           <FlatList
               data={data}
@@ -97,12 +100,13 @@ const Expenses = () => {
                   <View style={dropDownstyle.rowContainer}>
                     <Text style={textStyle.label}>Name:</Text>
                     <Text>{` ${item.name}`}</Text>
-                    <Text style={textStyle.label}>Amount:</Text>
-                    <Text>{` ${item.amount}`}</Text>
                   </View>
                   <View style={dropDownstyle.rowContainer}>
-                    <Text style={textStyle.label}>Category:</Text>
-                    <Text>{` ${item.category}`}</Text>
+                    <Text style={textStyle.label}>Amount:</Text>
+                    <Text>{` ${item.amount}`}</Text>
+   
+                  </View>
+                  <View style={dropDownstyle.rowContainer}>
                     <Text style={textStyle.label}>Date:</Text>
                     <Text>{` ${item.date}`}</Text>
                   </View>
@@ -114,12 +118,10 @@ const Expenses = () => {
                   </View>
                 </View>
               )}
-             // keyExtractor={(item) => item.toString()}
             />
           </View>
-
-          <View style={{ paddingTop: 1000 }}></View>
       </View>
+      </ScrollView>
     )
 };
 

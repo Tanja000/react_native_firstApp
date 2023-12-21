@@ -53,7 +53,7 @@ const New = () => {
   });
 
   const frequencyData = [
-    {label: "None", value: 1},
+    {label: "Unique", value: 1},
     {label: "daily", value: 2},
     {label: "weekly", value: 3},
     {label: "monthly", value: 4},
@@ -100,7 +100,7 @@ const New = () => {
       inputValues.date = inputDate;
     }
     if(inputValues.frequency === ''){
-      inputValues.frequency = 'None';
+      inputValues.frequency = 'Unique';
     }
     
     if (
@@ -211,8 +211,8 @@ const New = () => {
   );
 
   return (
+    <ScrollView >
     <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
-     <ScrollView >
 
       <View style={{ paddingTop: 20 }}></View>
       
@@ -257,7 +257,7 @@ const New = () => {
         />
       </View>
 
-      <View style={{ paddingTop: 20 }}></View>
+      <View style={{ paddingTop: 10 }}></View>
 
       <TextInput
         style={ inputStyle.primary}
@@ -275,7 +275,32 @@ const New = () => {
         value={inputValues.amount}
         onChangeText={(text) => handleInputChange('amount', text)}
       />
-      <View style={{ paddingTop: 10 }}></View>  
+      <View style={{ paddingTop: 30 }}></View>
+
+      <View>
+      {renderLabel3()}
+        <TextInput
+          style={[inputStyle.primary, !isValid && inputStyle.invalidInput]}
+          placeholder="DD.MM.YYYY"
+          value={inputDate}
+          onChangeText={(text) => handleInputChange('date', text)}
+        />
+        {!isValid && <Text style={textStyle.errorText}>Invalid date format</Text>}
+      </View> 
+
+      <SafeAreaView>     
+      <TouchableOpacity onPress={showDatePicker}  style={buttonStyle.buttonDelete}>
+          <Text style={textStyle.textButton}>Calendar Picker</Text>
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
+          />
+      </TouchableOpacity>
+      </SafeAreaView> 
+
+      <View style={{ paddingTop: 10 }}></View>
 
       <TextInput
         style={ inputStyle.primary}
@@ -319,41 +344,14 @@ const New = () => {
         />
       </View>
 
-      <View style={{ paddingTop: 30 }}></View>
-
-      <View>
-      {renderLabel3()}
-        <TextInput
-          style={[inputStyle.primary, !isValid && inputStyle.invalidInput]}
-          placeholder="DD.MM.YYYY"
-          value={inputDate}
-          onChangeText={(text) => handleInputChange('date', text)}
-        />
-        {!isValid && <Text style={textStyle.errorText}>Invalid date format</Text>}
-      </View> 
-
-      <SafeAreaView>     
-      <TouchableOpacity onPress={showDatePicker}  style={buttonStyle.buttonDelete}>
-          <Text style={textStyle.textButton}>DATE</Text>
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
-            mode="date"
-            onConfirm={handleConfirm}
-            onCancel={hideDatePicker}
-          />
-       </TouchableOpacity>
-       </SafeAreaView> 
-
-
       <View style={{ paddingTop: 20 }}></View>
        
 
       <TouchableOpacity onPress={handleSubmit}  style={buttonStyle.buttonDelete}>
           <Text style={textStyle.textButton}>SUBMIT</Text>
        </TouchableOpacity>
-
-       </ScrollView>
     </View>
+    </ScrollView>
   );
 };
 
