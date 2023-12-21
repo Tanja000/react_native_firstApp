@@ -75,10 +75,7 @@ const New = () => {
 
   const handleSubmit = async () => { 
 
-    if(inputValues.amount === ''){
-      inputValues.amount = 0;
-    }
-    if(inputValues.date === ''){
+   if(inputValues.date === ''){
       inputValues.date = inputDate;
     }
     if(inputValues.frequency === ''){
@@ -88,11 +85,10 @@ const New = () => {
     if (
       inputValues.category === '' ||
       inputValues.name === '' ||
-      inputValues.description === '' ||
       inputValues.amount === ''
     ) {
       // Wenn nicht alle Felder ausgefüllt sind, zeige eine Meldung an
-      Alert.alert('Error', 'Please fill in all fields before submitting.');
+      Alert.alert('Please fill in all fields before submitting.');
       return;
     }
 
@@ -116,8 +112,6 @@ const New = () => {
       const newItem = { ...inputValues };
       existingList.push(newItem);
 
-      console.log(existingList);
-
       // Speichern der aktualisierten Liste im AsyncStorage
       await AsyncStorage.setItem('expensesList', JSON.stringify(existingList));
 
@@ -136,6 +130,7 @@ const New = () => {
         date: ''
       });
     } catch (error) {
+      console.log("error hier")
       console.error('Error saving item:', error);
       Alert.alert('Error', 'Failed to save item. Please try again.');
     }

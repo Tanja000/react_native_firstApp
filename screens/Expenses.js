@@ -25,7 +25,6 @@ const Expenses = () => {
         const storedData = await AsyncStorage.getItem('expensesList');
         if (storedData !== null) {
           const parsedData = JSON.parse(storedData);
-          console.log(parsedData);
           setData(parsedData);
           const total = parsedData.reduce((accumulator, item) => accumulator + parseFloat(item.amount), 0);
           setTotalAmount(total);
