@@ -8,16 +8,48 @@ import { colors } from '../styles/Colors';
 import { textStyle } from '../styles/Text';
 import { barchartStyle } from '../styles/Barchart';
 
+export async function getCurrency(){
+  const storedCurrency = await AsyncStorage.getItem('currency');
+  if(storedCurrency === "euro"){
+    return('€');
+  }
+  else if(storedCurrency === "dollar"){
+    return('$');
+  }
+}
 
 const Report = () => {
   const [data, setData] = useState([]);
+  const [currencySymbol, setCurrencySymbol] = useState('€');
 
   // This effect will run when the screen gains focus
   useFocusEffect(
     React.useCallback(() => {
       loadDataFromAsyncStorage();
+      const currency = loadCurrencyFromStorage();
+      updateCurrencySymbol(currency);
     }, [])
   );
+
+
+  async function loadCurrencyFromStorage(){
+    const storedCurrency = await AsyncStorage.getItem('currency');
+    if(storedCurrency === "euro"){
+      setCurrencySymbol('€');
+    }
+    else if(storedCurrency === "dollar"){
+      setCurrencySymbol('$');
+    }
+  };
+
+  // Hier wird das Währungssymbol basierend auf der ausgewählten Währung aktualisiert
+  const updateCurrencySymbol = (selectedCurrency) => {
+    if (selectedCurrency === 'euro') {
+      setCurrencySymbol('€');
+    } else {
+      setCurrencySymbol('$');
+    }
+  };
 
   const loadDataFromAsyncStorage = async () => {
     try {
@@ -86,7 +118,7 @@ const Report = () => {
           height={Dimensions.get("window").height * 0.6}
         //  formatYLabel={() => yLabelIterator.next().value}
           verticalLabelRotation={90}
-          yAxisSuffix="€"
+          yAxisSuffix={currencySymbol}
           chartConfig={{
             style: {
               borderRadius: 0,

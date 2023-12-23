@@ -8,18 +8,41 @@ import { ScrollView } from 'react-native-virtualized-view';
 import { colors } from '../styles/Colors'; 
 import { textStyle } from '../styles/Text';
 import { dropDownstyle } from '../styles/Dropdown';
+import { getCurrency } from './Report';
 
 
 const Expenses = () => {
     const [data, setData] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
+    const [currencySymbol, setCurrencySymbol] = useState('€');
 
     // This effect will run when the screen gains focus
     useFocusEffect(
       React.useCallback(() => {
         fetchData();
+        const currency = loadCurrencyFromStorage();
+        updateCurrencySymbol(currency);
       }, [])
     );
+
+    async function loadCurrencyFromStorage(){
+      const storedCurrency = await AsyncStorage.getItem('currency');
+      if(storedCurrency === "euro"){
+        setCurrencySymbol('€');
+      }
+      else if(storedCurrency === "dollar"){
+        setCurrencySymbol('$');
+      }
+    };
+  
+    // Hier wird das Währungssymbol basierend auf der ausgewählten Währung aktualisiert
+    const updateCurrencySymbol = (selectedCurrency) => {
+      if (selectedCurrency === 'euro') {
+        setCurrencySymbol('€');
+      } else {
+        setCurrencySymbol('$');
+      }
+    };
   
     const fetchData = async () => {
       try {
@@ -86,7 +109,7 @@ const Expenses = () => {
           <View style={{ paddingTop: 20 }}></View>
 
           <View style={textStyle.textMain}>
-            <Text style={textStyle.label}>Total Amount: {totalAmount}</Text>
+            <Text style={textStyle.label}>Total Amount: {totalAmount} {currencySymbol}</Text>
           </View>
 
           <View style={{ paddingTop: 40 }}></View>
@@ -103,7 +126,7 @@ const Expenses = () => {
                   </View>
                   <View style={dropDownstyle.rowContainer}>
                     <Text style={textStyle.label}>Amount:</Text>
-                    <Text>{` ${item.amount}`}</Text> 
+                    <Text>{` ${item.amount}`} {currencySymbol}</Text> 
                   </View>
                   <View style={dropDownstyle.rowContainer}>
                     <Text style={textStyle.label}>Date:</Text>

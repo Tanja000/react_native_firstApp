@@ -21,6 +21,7 @@ const Settings = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [language, setLanguage] = useState('de');
   const [currency, setCurrency] = useState('euro');
+  const [currencySymbol, setCurrencySymbol] = useState('€');
 
   // This effect will run when the screen gains focus
   useFocusEffect(
@@ -39,12 +40,37 @@ const Settings = ({ navigation }) => {
     };
   
     const renderCurrencySymbol = () => {
-      if (currency === 'euro') {
-        return '€';
+      return currencySymbol;
+    };
+
+    const handleLanguageChange = (itemValue) => {
+      setLanguage(itemValue);
+    };
+  
+    const handleCurrencyChange = (itemValue) => {
+      setCurrency(itemValue);
+      updateCurrencySymbol(itemValue);
+      saveCurrencyToStorage(itemValue);
+    };
+
+    const updateCurrencySymbol = (selectedCurrency) => {
+      if (selectedCurrency === 'euro') {
+        setCurrencySymbol('€');
       } else {
-        return '$';
+        setCurrencySymbol('$');
       }
     };
+
+    const saveCurrencyToStorage = async (selectedCurrency) => {
+      try {
+        await AsyncStorage.setItem('currency', selectedCurrency);
+      } catch (error) {
+        console.error('Fehler beim Speichern der Währung in AsyncStorage:', error);
+      }
+    };
+  
+
+
   const loadCategories = async () => {
     try {
       const storedCategories = await AsyncStorage.getItem('categories');
@@ -200,7 +226,7 @@ async function deleteCategoryItem(label){
         <Picker
           selectedValue={currency}
           style={dropDownstyle.container}
-          onValueChange={(itemValue) => setCurrency(itemValue)}
+          onValueChange={(itemValue) => handleCurrencyChange(itemValue)}
         >
           <Picker.Item style={textStyle.textSmall} label="Euro" value="euro" />
           <Picker.Item style={textStyle.textSmall} label="Dollar" value="dollar" />
