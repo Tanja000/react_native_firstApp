@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, TextInput, TouchableOpacity, FlatList,  Modal, Alert, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList,  Modal, Alert, StyleSheet, Dimensions, Image } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons'; 
+
 
 import { buttonStyle } from '../styles/Buttons';
 import { textStyle } from '../styles/Text';
 import { colors } from '../styles/Colors'; 
 import { inputStyle } from '../styles/Inputs'; 
+import { dropDownstyle } from '../styles/Dropdown';
 
 
 const Settings = ({ navigation }) => {
@@ -15,29 +18,32 @@ const Settings = ({ navigation }) => {
   const [newCategory, setNewCategory] = useState('');
   const [data, setData] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [language, setLanguage] = useState('de');
+  const [currency, setCurrency] = useState('euro');
 
   // This effect will run when the screen gains focus
   useFocusEffect(
       React.useCallback(() => {
         loadCategories();
-       // fetchData();
       }, [])
     );
 
-  /*  const fetchData = async () => {
-      try {
-    //    await AsyncStorage.removeItem('expensesList');
-        const storedData = await AsyncStorage.getItem('expensesList');
-        if (storedData !== null) {
-          const parsedData = JSON.parse(storedData);
-          setData(parsedData);
-        }
-      } catch (error) {
-        console.error('Fehler beim Laden der Daten: ', error);
-      }
-    };*/
+    const renderFlag = () => {
+      if (language === 'en') {
+        return <Image source={require('../assets/american-flag.png')} style={textStyle.flagImage} />;
+      } else {
     
-
+        return <Image source={require('../assets/germany-flag.png')} style={textStyle.flagImage} />;
+      }
+    };
+  
+    const renderCurrencySymbol = () => {
+      if (currency === 'euro') {
+        return '€';
+      } else {
+        return '$';
+      }
+    };
   const loadCategories = async () => {
     try {
       const storedCategories = await AsyncStorage.getItem('categories');
@@ -175,9 +181,37 @@ async function deleteCategoryItem(label){
           keyExtractor={(item) => item.label.toString()}
         />
 
-        <View style={{ paddingTop: 200 }}></View>
+        <View style={{ paddingTop: 200}}></View>
 
-  
+
+      
+      <View style={dropDownstyle.container}>
+        <Text style={textStyle.textSmall}>Select Language and Currency:</Text>
+        <Picker
+          selectedValue={language}
+          style={dropDownstyle.container}
+          onValueChange={(itemValue) => setLanguage(itemValue)}
+        >
+          <Picker.Item style={textStyle.textSmall} label="German" value="de" />
+          <Picker.Item style={textStyle.textSmall} label="English" value="en" />
+        </Picker>
+        <Picker
+          selectedValue={currency}
+          style={dropDownstyle.container}
+          onValueChange={(itemValue) => setCurrency(itemValue)}
+        >
+          <Picker.Item style={textStyle.textSmall} label="Euro" value="euro" />
+          <Picker.Item style={textStyle.textSmall} label="Dollar" value="dollar" />
+        </Picker>
+        
+        <Text style={textStyle.textSmall}>
+           {renderFlag()}
+            ...
+           {renderCurrencySymbol()}
+        </Text>
+      </View>
+   
+ 
 
          {/* Modal für Bestätigung */}
       <Modal
@@ -217,7 +251,6 @@ async function deleteCategoryItem(label){
           </View>
         </View>
       </Modal>
-
     </View>
   );
 };

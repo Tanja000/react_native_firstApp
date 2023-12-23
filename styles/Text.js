@@ -1,6 +1,10 @@
 import { colors } from './Colors'; 
 
 export const textStyle = {
+    flagImage: {
+      width: 40,
+      height: 30,
+    },
     label: {
         fontWeight: 'bold',
         marginRight: 8,
