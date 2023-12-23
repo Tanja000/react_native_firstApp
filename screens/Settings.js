@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList,  Modal, Alert, StyleSheet, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MaterialIcons } from '@expo/vector-icons'; 
 
 import { buttonStyle } from '../styles/Buttons';
 import { textStyle } from '../styles/Text';
@@ -13,6 +14,7 @@ const Settings = ({ navigation }) => {
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState('');
   const [data, setData] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
   // This effect will run when the screen gains focus
   useFocusEffect(
@@ -105,58 +107,37 @@ async function deleteCategoryItem(label){
     }
   }
 
-
-  const deleteCategories = () => {
-    Alert.alert(
-      'Delete Categories',
-      'Are you sure you want to delete all unused categories?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Delete',
-          onPress: async () => {
-
-            let storedCategories = JSON.parse(await AsyncStorage.getItem('categories')) || [];
-            const storedExpenses = JSON.parse(await AsyncStorage.getItem('expensesList')) || [];
-            
-            const unusedCategories = storedCategories.filter(category => {
-                // Prüfe, ob ein Element in storedExpenses existiert, das gleich category ist
-                return !storedExpenses.some(expense => areCategoriesEqual(category, expense));
-              });
-
-            for (const currentObj of unusedCategories) {
-               await deleteCategoryItem(currentObj.label);
-            }
-          },
-        },
-      ],
-      { cancelable: false }
-    );
+  const handleDeletePress = () => {
+    setModalVisible(true);
   };
 
-  async function deleteAllData(label){
-    Alert.alert(
-      'Delete Data',
-      'Are you sure you want to delete all data?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Delete',
-          onPress: async () => {
-            await AsyncStorage.removeItem('categories');
-            setCategories([]);
-            await AsyncStorage.removeItem('expensesList');
-          },
-        },
-      ],
-      { cancelable: false }
-    );
+  async function handleDeleteConfirmed(action){
+    if (action === 'Delete All Data'){
+      await AsyncStorage.removeItem('categories');
+      setCategories([]);
+      await AsyncStorage.removeItem('expensesList');
+      console.log("delete all data");
+    }
+    else if (action === 'Delete unused Categories'){
+        let storedCategories = JSON.parse(await AsyncStorage.getItem('categories')) || [];
+        const storedExpenses = JSON.parse(await AsyncStorage.getItem('expensesList')) || [];
+        
+        const unusedCategories = storedCategories.filter(category => {
+            // Prüfe, ob ein Element in storedExpenses existiert, das gleich category ist
+            return !storedExpenses.some(expense => areCategoriesEqual(category, expense));
+          });
+
+        for (const currentObj of unusedCategories) {
+          await deleteCategoryItem(currentObj.label);
+        }
+        console.log("Delete Categories");
+    }
+    setModalVisible(false);
+  };
+
+  const closeModal = () => {
+    console.log("hier")
+    setModalVisible(false);
   };
 
   return (
@@ -191,18 +172,57 @@ async function deleteCategoryItem(label){
 
         <View style={{ paddingTop: 200 }}></View>
 
-        <TouchableOpacity onPress={deleteCategories} style={buttonStyle.buttonDelete} >
-          <Text style={textStyle.textButton}>DELETE UNUSED CATEGORIES</Text>
+        <TouchableOpacity onPress={handleDeletePress} style={styles.deleteButton}>
+            <MaterialIcons name="delete" size={30} color="black" />
         </TouchableOpacity>
 
-        <View style={{ paddingTop: 10 }}></View>
+         {/* Modal für Bestätigung */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={inputStyle.centeredView}>
+          <View style={inputStyle.primary}>
 
-        <TouchableOpacity onPress={deleteAllData} style={buttonStyle.buttonDelete} >
-          <Text style={textStyle.textButton}>DELETE ALL DATA</Text>
-        </TouchableOpacity>
+            <TouchableOpacity onPress={closeModal} style={buttonStyle.closeButton}>
+              <MaterialIcons name="close" size={24} color="black" />
+            </TouchableOpacity>
+
+            <View style={{ paddingTop: 30 }}></View>
+
+            <Text>Are you sure you want to delete?</Text>
+            
+            <View style={{ paddingTop: 20 }}></View>
+
+            <TouchableOpacity
+              style={buttonStyle.button}
+              onPress={() => handleDeleteConfirmed('Delete All Data')}
+            >
+            <Text style={textStyle.textButton}>Delete All Data</Text>
+            </TouchableOpacity>
+
+            <View style={{ paddingTop: 20 }}></View>
+
+            <TouchableOpacity
+              style={buttonStyle.button}
+              onPress={() => handleDeleteConfirmed('Delete unused Categories')}
+            >
+            <Text style={textStyle.textButton}>Delete unused Categories</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
     </View>
   );
 };
 
 export default Settings;
+
+const styles = StyleSheet.create({
+  deleteButton: {
+    marginLeft: Dimensions.get("window").width * 0.8
+  },
+});

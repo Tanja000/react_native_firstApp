@@ -118,7 +118,7 @@ const New = () => {
       const existingListString = await AsyncStorage.getItem('expensesList');
       const existingList = existingListString ? JSON.parse(existingListString) : [];
 
-      if(existingListString.length === 0 || existingList.length === 0){
+      if(existingListString == null || existingListString.length === 0 || existingList.length === 0){
         inputValues.index = 1;
       }
       else{

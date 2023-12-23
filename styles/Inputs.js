@@ -8,6 +8,12 @@ export const inputStyle = {
         borderRadius: 20, 
         padding: 10,
     },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 50,
+      },
     invalidInput: {
         borderColor: 'red',
       },
