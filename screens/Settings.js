@@ -4,6 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, FlatList,  Modal, Alert, Style
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons'; 
+import { ScrollView } from 'react-native-virtualized-view';
 
 
 import { buttonStyle } from '../styles/Buttons';
@@ -146,6 +147,7 @@ async function deleteCategoryItem(label){
   };
 
   return (
+    <ScrollView>
       <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
       <View style={{ paddingTop: 20 }}></View>
         <Text style={textStyle.textMain}>Categories</Text>
@@ -252,6 +254,7 @@ async function deleteCategoryItem(label){
         </View>
       </Modal>
     </View>
+    </ScrollView>
   );
 };
 
