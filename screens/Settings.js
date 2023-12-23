@@ -136,15 +136,20 @@ async function deleteCategoryItem(label){
   };
 
   const closeModal = () => {
-    console.log("hier")
     setModalVisible(false);
   };
 
   return (
       <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
-        <View style={{ paddingTop: 20 }}></View>
- 
+      <View style={{ paddingTop: 20 }}></View>
         <Text style={textStyle.textMain}>Categories</Text>
+        
+
+        <TouchableOpacity onPress={handleDeletePress} style={styles.deleteButton}>
+            <MaterialIcons name="delete" size={30} color="black" />
+        </TouchableOpacity>
+ 
+
 
         <View style={{ paddingTop: 20 }}></View>
 
@@ -172,9 +177,7 @@ async function deleteCategoryItem(label){
 
         <View style={{ paddingTop: 200 }}></View>
 
-        <TouchableOpacity onPress={handleDeletePress} style={styles.deleteButton}>
-            <MaterialIcons name="delete" size={30} color="black" />
-        </TouchableOpacity>
+  
 
          {/* Modal für Bestätigung */}
       <Modal
