@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { Dropdown } from 'react-native-searchable-dropdown-kj';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-//import DateTimePicker from '@react-native-community/datetimepicker';
+import { MaterialIcons } from '@expo/vector-icons'; 
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 import { colors } from '../styles/Colors'; 
@@ -277,8 +277,17 @@ const New = () => {
       />
       <View style={{ paddingTop: 30 }}></View>
 
-      <View>
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20}}>
       {renderLabel3()}
+        <TouchableOpacity onPress={showDatePicker}>
+            <MaterialIcons name="date-range" size={44} color='#1c0821' />
+            <DateTimePickerModal
+              isVisible={isDatePickerVisible}
+              mode="date"
+              onConfirm={handleConfirm}
+              onCancel={hideDatePicker}
+            />
+          </TouchableOpacity>
         <TextInput
           style={[inputStyle.primary, !isValid && inputStyle.invalidInput]}
           placeholder="DD.MM.YYYY"
@@ -287,18 +296,6 @@ const New = () => {
         />
         {!isValid && <Text style={textStyle.errorText}>Invalid date format</Text>}
       </View> 
-
-      <SafeAreaView>     
-      <TouchableOpacity onPress={showDatePicker}  style={buttonStyle.buttonDelete}>
-          <Text style={textStyle.textButton}>Calendar Picker</Text>
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
-            mode="date"
-            onConfirm={handleConfirm}
-            onCancel={hideDatePicker}
-          />
-      </TouchableOpacity>
-      </SafeAreaView> 
 
       <View style={{ paddingTop: 10 }}></View>
 
