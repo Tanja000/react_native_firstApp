@@ -38,7 +38,10 @@ const translations = {
         weekly: "weekly",
         monthly: "monthly",
         yearly: "yearly",
-        KW: "CW"
+        KW: "CW",
+        success: "success",
+        success_note: "Item added to the list successfully.",
+        missing_field: "Please fill in all fields before submitting."
     },
 
     de :{
@@ -79,7 +82,10 @@ const translations = {
         weekly: "wöchentlich",
         monthly: "monatlich",
         yearly: "jährlich",
-        KW: "KW"
+        KW: "KW",
+        success: "Erfolg!",
+        success_note: "Ausgabe erfolgreich hinzugefügt!",
+        missing_field: "Bitte fülle das fehlende Feld aus!"
     }
 
 }

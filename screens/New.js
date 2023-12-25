@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { Dropdown } from 'react-native-searchable-dropdown-kj';
@@ -134,7 +134,7 @@ const New = () => {
       inputValues.amount === ''
     ) {
       // Wenn nicht alle Felder ausgefüllt sind, zeige eine Meldung an
-      Alert.alert('Please fill in all fields before submitting.');
+      Alert.alert(i18n.t('missing_field'));
       return;
     }
 
@@ -164,7 +164,7 @@ const New = () => {
       await AsyncStorage.setItem('expensesList', JSON.stringify(existingList));
 
       // Benachrichtigung, dass der Vorgang erfolgreich war
-      Alert.alert('Success', 'Item added to the list successfully.');
+      Alert.alert(i18n.t('success'), i18n.t('success_note'));
 
        // Zurücksetzen der TextInputs
       setCounter(0);
@@ -345,7 +345,8 @@ const New = () => {
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? i18n.t('select_frequency') : '...'}
+          placeholder={frequencyData[0].label}
+
           searchPlaceholder="Search..."
           value={value}
           onFocus={() => setIsFocus(true)}
@@ -353,7 +354,7 @@ const New = () => {
           onChange={item => {
             handleInputChange('frequency', item.label)
             setValue(item.value);
-            setIsFocus(false);
+            setIsFocus(true);
           }}
           renderLeftIcon={() => (
             <AntDesign

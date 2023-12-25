@@ -47,7 +47,7 @@ const Report = () => {
   }
 
   const options = [
-    { label: i18n.t('unique'), value: 'day' },
+    { label: i18n.t('daily'), value: 'day' },
     { label: i18n.t('weekly'), value: 'week' },
     { label: i18n.t('monthly'), value: 'month' },
     { label: i18n.t('yearly'), value: 'year' },
