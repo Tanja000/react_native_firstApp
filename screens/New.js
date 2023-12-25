@@ -77,11 +77,11 @@ const New = () => {
   });
 
   const frequencyData = [
-    {label: "Unique", value: 1},
-    {label: "daily", value: 2},
-    {label: "weekly", value: 3},
-    {label: "monthly", value: 4},
-    {label: "yearly", value: 5}
+    {label: i18n.t('unique'), value: 1},
+    {label: i18n.t('daily'), value: 2},
+    {label: i18n.t('weekly'), value: 3},
+    {label: i18n.t('monthly'), value: 4},
+    {label: i18n.t('yearly'), value: 5}
   ];
 
 
