@@ -322,6 +322,7 @@ const Report = () => {
       {renderLabel1()}
       <RNPickerSelect
           items={options}
+          placeholder={{}}
           onValueChange={handleChangeOption}
           value={selectedOption}
         />
