@@ -3,24 +3,23 @@ import { View, Text,  Dimensions, ScrollView} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { BarChart } from 'react-native-chart-kit';
+import * as Localization from 'expo-localization';
+import { I18n } from 'i18n-js';
 
+import { translations } from '../utils/localization';
 import { colors } from '../styles/Colors'; 
 import { textStyle } from '../styles/Text';
 import { barchartStyle } from '../styles/Barchart';
 
-export async function getCurrency(){
-  const storedCurrency = await AsyncStorage.getItem('currency');
-  if(storedCurrency === "euro"){
-    return('€');
-  }
-  else if(storedCurrency === "dollar"){
-    return('$');
-  }
-}
 
 const Report = () => {
   const [data, setData] = useState([]);
   const [currencySymbol, setCurrencySymbol] = useState('€');
+  const i18n = new I18n(translations);
+
+  let [locale, setLocale] = useState(Localization.locale);
+  locale = locale.substring(0, locale.length - 3);
+  i18n.locale = locale;
 
   // This effect will run when the screen gains focus
   useFocusEffect(
@@ -28,9 +27,19 @@ const Report = () => {
       loadDataFromAsyncStorage();
       const currency = loadCurrencyFromStorage();
       updateCurrencySymbol(currency);
+      getLanguage();
     }, [])
   );
 
+  async function getLanguage(){
+    const storedLanguage = await AsyncStorage.getItem('language');
+    if(storedLanguage === "de"){
+      setLocale("de-DE");
+    }
+    else if(storedLanguage === "en"){
+      setLocale("en-EN");
+    }
+  }
 
   async function loadCurrencyFromStorage(){
     const storedCurrency = await AsyncStorage.getItem('currency');
@@ -97,13 +106,13 @@ const Report = () => {
 
       <View style={{ paddingTop: 20 }}></View>
  
-      <Text style={textStyle.textMain}>Report</Text>
+      <Text style={textStyle.textMain}>{i18n.t('report')}</Text>
 
       <View style={{ paddingTop: 40 }}></View>
 
 
       <View style={barchartStyle.container}>
-        <Text style={barchartStyle.title}>Amount per Date</Text>
+        <Text style={barchartStyle.title}>{i18n.t('amount_per_date')}</Text>
         <ScrollView horizontal={true}>
         <BarChart
           data={{

@@ -6,7 +6,10 @@ import { Dropdown } from 'react-native-searchable-dropdown-kj';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { MaterialIcons } from '@expo/vector-icons'; 
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import * as Localization from 'expo-localization';
+import { I18n } from 'i18n-js';
 
+import { translations } from '../utils/localization';
 import { colors } from '../styles/Colors'; 
 import { textStyle } from '../styles/Text';
 import { buttonStyle } from '../styles/Buttons';
@@ -24,7 +27,29 @@ const New = () => {
   const [counter, setCounter] = useState(0);
   const [amount, setAmount] = useState('');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const i18n = new I18n(translations);
 
+  let [locale, setLocale] = useState(Localization.locale);
+  locale = locale.substring(0, locale.length - 3);
+  i18n.locale = locale;
+
+
+    // This effect will run when the screen gains focus
+    useFocusEffect(
+      React.useCallback(() => {
+        getLanguage();
+      }, [])
+    );
+
+    async function getLanguage(){
+      const storedLanguage = await AsyncStorage.getItem('language');
+      if(storedLanguage === "de"){
+        setLocale("de-DE");
+      }
+      else if(storedLanguage === "en"){
+        setLocale("en-EN");
+      }
+    }
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -75,6 +100,7 @@ const New = () => {
       [field]: value,
     }));
   };
+
 
   function formatDate(date){
     const day = date.getDate();
@@ -161,7 +187,7 @@ const New = () => {
     if (value || isFocus) {
       return (
         <Text style={[dropDownstyle.label, isFocus && { color: colors.colorDelete }]}>
-          Select a Category
+          {i18n.t('select_category')}
         </Text>
       );
     }
@@ -172,7 +198,7 @@ const New = () => {
     if (value || isFocus) {
       return (
         <Text style={[dropDownstyle.label, isFocus && { color: colors.colorDelete }]}>
-          Select a Frequency
+          {i18n.t('select_frequency')}
         </Text>
       );
     }
@@ -183,7 +209,7 @@ const New = () => {
     if (value || isFocus) {
       return (
         <Text style={[dropDownstyle.label, isFocus && { color: colors.colorDelete }]}>
-          Enter a Date (DD.MM.YYYY)
+          {i18n.t('enter_date')} (DD.MM.YYYY)
         </Text>
       );
     }
@@ -216,8 +242,7 @@ const New = () => {
 
       <View style={{ paddingTop: 20 }}></View>
       
-      <Text style={textStyle.textMain}>New</Text>
-
+      <Text style={textStyle.textMain}>{i18n.t('new')}</Text>
 
 
       <View style={{ paddingTop: 30 }}></View>
@@ -236,7 +261,7 @@ const New = () => {
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? 'Select Category' : '...'}
+          placeholder={!isFocus ? i18n.t('select_category') : '...'}
           searchPlaceholder="Search..."
           value={value}
           onFocus={() => setIsFocus(true)}
@@ -261,7 +286,7 @@ const New = () => {
 
       <TextInput
         style={ inputStyle.primary}
-        placeholder="Enter a Name"
+        placeholder={i18n.t('enter_name')}
         value={inputValues.name}
         onChangeText={(text) => handleInputChange('name', text)}
       />
@@ -270,7 +295,7 @@ const New = () => {
 
       <TextInput
         style={ inputStyle.primary}
-        placeholder="Enter the Amount"
+        placeholder={i18n.t('enter_amount')}
         keyboardType="numeric"
         value={inputValues.amount}
         onChangeText={(text) => handleInputChange('amount', text)}
@@ -294,14 +319,14 @@ const New = () => {
           value={inputDate}
           onChangeText={(text) => handleInputChange('date', text)}
         />
-        {!isValid && <Text style={textStyle.errorText}>Invalid date format</Text>}
+        {!isValid && <Text style={textStyle.errorText}>{i18n.t('invalid_date_format')}</Text>}
       </View> 
 
       <View style={{ paddingTop: 10 }}></View>
 
       <TextInput
         style={ inputStyle.primary}
-        placeholder="Enter a Description"
+        placeholder={i18n.t('enter_description')}
         value={inputValues.description}
         onChangeText={(text) => handleInputChange('description', text)}
       />
@@ -320,7 +345,7 @@ const New = () => {
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? 'Select Frequency' : '...'}
+          placeholder={!isFocus ? i18n.t('select_frequency') : '...'}
           searchPlaceholder="Search..."
           value={value}
           onFocus={() => setIsFocus(true)}
@@ -345,7 +370,7 @@ const New = () => {
        
 
       <TouchableOpacity onPress={handleSubmit}  style={buttonStyle.buttonDelete}>
-          <Text style={textStyle.textButton}>SUBMIT</Text>
+          <Text style={textStyle.textButton}>{i18n.t('submit')}</Text>
        </TouchableOpacity>
     </View>
     </ScrollView>

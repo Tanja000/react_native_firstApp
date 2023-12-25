@@ -4,17 +4,23 @@ import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons'; 
 import { ScrollView } from 'react-native-virtualized-view';
+import * as Localization from 'expo-localization';
+import { I18n } from 'i18n-js';
 
+import { translations } from '../utils/localization';
 import { colors } from '../styles/Colors'; 
 import { textStyle } from '../styles/Text';
 import { dropDownstyle } from '../styles/Dropdown';
-import { getCurrency } from './Report';
-
 
 const Expenses = () => {
     const [data, setData] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
     const [currencySymbol, setCurrencySymbol] = useState('€');
+    const i18n = new I18n(translations);
+
+    let [locale, setLocale] = useState(Localization.locale);
+    locale = locale.substring(0, locale.length - 3);
+    i18n.locale = locale;
 
     // This effect will run when the screen gains focus
     useFocusEffect(
@@ -22,8 +28,19 @@ const Expenses = () => {
         fetchData();
         const currency = loadCurrencyFromStorage();
         updateCurrencySymbol(currency);
+        getLanguage();
       }, [])
     );
+
+    async function getLanguage(){
+      const storedLanguage = await AsyncStorage.getItem('language');
+      if(storedLanguage === "de"){
+        setLocale("de-DE");
+      }
+      else if(storedLanguage === "en"){
+        setLocale("en-EN");
+      }
+    }
 
     async function loadCurrencyFromStorage(){
       const storedCurrency = await AsyncStorage.getItem('currency');
@@ -61,15 +78,15 @@ const Expenses = () => {
   
     const deleteItem = async (index) => {
       Alert.alert(
-        'Delete Data',
-        'Are you sure you want to delete this item?',
+        i18n.t('sure_delete'),
+        '',
         [
           {
-            text: 'Cancel',
+            text: i18n.t('cancel'),
             style: 'cancel',
           },
           {
-            text: 'Delete',
+            text: i18n.t('delete'),
             onPress: async () => {
               deleteExpenseListItem(index);
             },
@@ -104,12 +121,12 @@ const Expenses = () => {
       <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
           <View style={{ paddingTop: 20 }}></View>
     
-          <Text style={textStyle.textMain}>Expenses</Text>
+          <Text style={textStyle.textMain}>{i18n.t('expenses')}</Text>
 
           <View style={{ paddingTop: 20 }}></View>
 
           <View style={textStyle.textMain}>
-            <Text style={textStyle.label}>Total Amount: {totalAmount} {currencySymbol}</Text>
+            <Text style={textStyle.label}>{i18n.t('total_amount')}: {totalAmount} {currencySymbol}</Text>
           </View>
 
           <View style={{ paddingTop: 40 }}></View>
@@ -121,19 +138,19 @@ const Expenses = () => {
               renderItem={({ item }) => (
                 <View style={dropDownstyle.container}>
                   <View style={dropDownstyle.rowContainer}>
-                    <Text style={textStyle.label}>Name:</Text>
+                    <Text style={textStyle.label}>{i18n.t('name')}:</Text>
                     <Text>{` ${item.name}`}</Text>
                   </View>
                   <View style={dropDownstyle.rowContainer}>
-                    <Text style={textStyle.label}>Amount:</Text>
+                    <Text style={textStyle.label}>{i18n.t('amount')}:</Text>
                     <Text>{` ${item.amount}`} {currencySymbol}</Text> 
                   </View>
                   <View style={dropDownstyle.rowContainer}>
-                    <Text style={textStyle.label}>Date:</Text>
+                    <Text style={textStyle.label}>{i18n.t('date')}:</Text>
                     <Text>{` ${item.date}`}</Text>
                   </View>
                   <View style={dropDownstyle.rowContainer}>
-                    <Text style={textStyle.label}>Category:</Text>
+                    <Text style={textStyle.label}>{i18n.t('category')}:</Text>
                     <Text>{` ${item.category}`}</Text>
                   </View>
                   <View style={dropDownstyle.rowContainer}>

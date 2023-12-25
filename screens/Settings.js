@@ -5,24 +5,30 @@ import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons'; 
 import { ScrollView } from 'react-native-virtualized-view';
+import * as Localization from 'expo-localization';
+import { I18n } from 'i18n-js';
 
-
+import { translations } from '../utils/localization';
 import { buttonStyle } from '../styles/Buttons';
 import { textStyle } from '../styles/Text';
 import { colors } from '../styles/Colors'; 
 import { inputStyle } from '../styles/Inputs'; 
 import { dropDownstyle } from '../styles/Dropdown';
 
-
 const Settings = ({ navigation }) => {
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState('');
   const [data, setData] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [language, setLanguage] = useState('de');
   const [currency, setCurrency] = useState('euro');
   const [currencySymbol, setCurrencySymbol] = useState('€');
+  const i18n = new I18n(translations);
 
+  let [locale, setLocale] = useState(Localization.locale);
+  locale = locale.substring(0, locale.length - 3);
+  i18n.locale = locale;
+
+  
   // This effect will run when the screen gains focus
   useFocusEffect(
       React.useCallback(() => {
@@ -30,11 +36,12 @@ const Settings = ({ navigation }) => {
       }, [])
     );
 
+
+
     const renderFlag = () => {
-      if (language === 'en') {
+      if (i18n.locale === 'en') {
         return <Image source={require('../assets/american-flag.png')} style={textStyle.flagImage} />;
       } else {
-    
         return <Image source={require('../assets/germany-flag.png')} style={textStyle.flagImage} />;
       }
     };
@@ -44,7 +51,14 @@ const Settings = ({ navigation }) => {
     };
 
     const handleLanguageChange = (itemValue) => {
-      setLanguage(itemValue);
+      //i18n.locale = itemValue;
+      if(itemValue === "de"){
+        setLocale("de-DE");
+      }
+      else if(itemValue === "en"){
+        setLocale("en-EN");
+      }
+      saveLanguageToStorage(itemValue);
     };
   
     const handleCurrencyChange = (itemValue) => {
@@ -66,6 +80,14 @@ const Settings = ({ navigation }) => {
         await AsyncStorage.setItem('currency', selectedCurrency);
       } catch (error) {
         console.error('Fehler beim Speichern der Währung in AsyncStorage:', error);
+      }
+    };
+
+    const saveLanguageToStorage = async (selectedLanguage) => {
+      try {
+        await AsyncStorage.setItem('language', selectedLanguage);
+      } catch (error) {
+        console.error('Fehler beim Speichern der Sprache in AsyncStorage:', error);
       }
     };
   
@@ -149,6 +171,7 @@ async function deleteCategoryItem(label){
       await AsyncStorage.removeItem('categories');
       setCategories([]);
       await AsyncStorage.removeItem('expensesList');
+      await AsyncStorage.removeItem('language');
       console.log("delete all data");
     }
     else if (action === 'Delete unused Categories'){
@@ -176,7 +199,7 @@ async function deleteCategoryItem(label){
     <ScrollView>
       <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
       <View style={{ paddingTop: 20 }}></View>
-        <Text style={textStyle.textMain}>Categories</Text>
+        <Text style={textStyle.textMain}>{i18n.t('categories')}</Text>
         
 
         <TouchableOpacity onPress={handleDeletePress} style={styles.deleteButton}>
@@ -189,14 +212,14 @@ async function deleteCategoryItem(label){
 
        <TextInput
           style={ inputStyle.primary}
-          placeholder="Enter new category"
+          placeholder={i18n.t('enter_new_categories')}
           value={newCategory}
           onChangeText={(text) => setNewCategory(text)}
         />
         <View style={{ paddingTop: 10 }}></View>
 
         <TouchableOpacity onPress={addCategory} style={buttonStyle.button} >
-          <Text style={textStyle.textButton}>ADD CATEGORY</Text>
+          <Text style={textStyle.textButton}>{i18n.t('add_category')}</Text>
         </TouchableOpacity>
 
         <View style={{ paddingTop: 10 }}></View>
@@ -214,14 +237,14 @@ async function deleteCategoryItem(label){
 
       
       <View style={dropDownstyle.container}>
-        <Text style={textStyle.textSmall}>Select Language and Currency:</Text>
+        <Text style={textStyle.textSmall}>{i18n.t('select_language_and_currency')}</Text>
         <Picker
-          selectedValue={language}
+          selectedValue={i18n.locale}
           style={dropDownstyle.container}
-          onValueChange={(itemValue) => setLanguage(itemValue)}
+          onValueChange={(itemValue) => handleLanguageChange(itemValue)}
         >
-          <Picker.Item style={textStyle.textSmall} label="German" value="de" />
-          <Picker.Item style={textStyle.textSmall} label="English" value="en" />
+          <Picker.Item style={textStyle.textSmall} label={i18n.t('german')} value="de" />
+          <Picker.Item style={textStyle.textSmall} label={i18n.t('english')} value="en" />
         </Picker>
         <Picker
           selectedValue={currency}
@@ -257,7 +280,7 @@ async function deleteCategoryItem(label){
 
             <View style={{ paddingTop: 30 }}></View>
 
-            <Text>Are you sure you want to delete?</Text>
+            <Text>{i18n.t('sure_delete')}</Text>
             
             <View style={{ paddingTop: 20 }}></View>
 
@@ -265,7 +288,7 @@ async function deleteCategoryItem(label){
               style={buttonStyle.button}
               onPress={() => handleDeleteConfirmed('Delete All Data')}
             >
-            <Text style={textStyle.textButton}>Delete All Data</Text>
+            <Text style={textStyle.textButton}>{i18n.t('delete_all')}</Text>
             </TouchableOpacity>
 
             <View style={{ paddingTop: 20 }}></View>
@@ -274,7 +297,7 @@ async function deleteCategoryItem(label){
               style={buttonStyle.button}
               onPress={() => handleDeleteConfirmed('Delete unused Categories')}
             >
-            <Text style={textStyle.textButton}>Delete unused Categories</Text>
+            <Text style={textStyle.textButton}>{i18n.t('delete_cat')}</Text>
             </TouchableOpacity>
           </View>
         </View>
