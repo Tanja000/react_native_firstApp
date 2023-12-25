@@ -22,6 +22,9 @@ const translations = {
         cancel: "cancel",
         delete: "delete",
         amount_per_date: "Amount per Day",
+        amount_per_week: "Amount per Week",
+        amount_per_month: "Amount per Month",
+        amount_per_year: "Amount per Year",
         select_category: "Select a Category",
         select_frequency: "Select a Frequency",
         enter_date: "Enter a Date",
@@ -34,7 +37,8 @@ const translations = {
         daily: "daily",
         weekly: "weekly",
         monthly: "monthly",
-        yearly: "yearly"
+        yearly: "yearly",
+        KW: "CW"
     },
 
     de :{
@@ -59,6 +63,9 @@ const translations = {
         cancel: "abbrechen",
         delete: "löschen",
         amount_per_date: "Betrag pro Tag",
+        amount_per_week: "Betrag pro Woche",
+        amount_per_month: "Betrag pro Monat",
+        amount_per_year: "Betrag pro Jahr",
         select_category: "Wähle eine Kategorie",
         select_frequency: "Wähle eine Frequenz",
         enter_date: "Gib ein Datum ein",
@@ -71,7 +78,8 @@ const translations = {
         daily: "täglich",
         weekly: "wöchentlich",
         monthly: "monatlich",
-        yearly: "jährlich"
+        yearly: "jährlich",
+        KW: "KW"
     }
 
 }
