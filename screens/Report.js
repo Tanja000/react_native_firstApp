@@ -39,6 +39,47 @@ const Report = () => {
     }, [])
   );
 
+  async function loadDataFromAsyncStorage(){
+    try {
+       const existingListString = await AsyncStorage.getItem('expensesList');
+
+      if (existingListString) {
+        const existingList = JSON.parse(existingListString);
+
+ 
+        // Gruppiere die Daten nach Datum und summiere die Amounts pro Tag auf
+        const groupedData = existingList.reduce((result, item) => {
+          const dateString = item.date;
+          const date = new Date(dateString.split(".").reverse().join("-"));
+
+          if (!result[date]) {
+            result[date] = 0;
+          }
+
+          result[date] += parseFloat(item.amount);
+
+          return result;
+        }, {});
+
+        // Formatieren der Daten für die Barchart
+        const chartData = Object.keys(groupedData).map(date => ({
+          date,
+          amount: groupedData[date],
+        }));
+
+        const sortedData = chartData.sort((a, b) => new Date(a.date) - new Date(b.date));
+        const formattedData = sortedData.map(item => {
+          const formattedDate = new Date(item.date).toLocaleDateString('de-DE'); // Format 'DD.MM.YYYY'
+          return { ...item, date: formattedDate };
+        });
+
+        setData(formattedData);
+      }
+    } catch (error) {
+      console.error('Fehler beim Laden der Daten aus AsyncStorage:', error);
+    }
+  };
+
   async function setLanguage(){
     const storedLanguage = await AsyncStorage.getItem('language');
     
@@ -65,6 +106,28 @@ const Report = () => {
     setSelectedOption(value);
   };
 
+
+  async function getDataForCategory(){
+    const catData = await loadCategoryDataFromAsncStorage();
+    console.log(catData);
+    return {
+      labels: data.map(item => item.date),
+      datasets: [
+        {
+          data: data.map(item => item.amount),
+        },
+      ],
+    };
+    /*return {
+      labels: catData.map(item => item.name),
+      datasets: [
+        {
+          data: catData.map(item => item.amount),
+        },
+      ],
+    };*/
+  }
+
   const getDataForSelectedOption = (selectedOption) => {
     switch (selectedOption) {
       case 'day':
@@ -81,8 +144,6 @@ const Report = () => {
   };
 
   const generateDataForDay = () => {
-    // Hier implementiere die Logik für Balken pro Woche
-    // Erstelle Daten für Balken pro Woche
     return {
       labels: data.map(item => item.date),
       datasets: [
@@ -245,45 +306,7 @@ const Report = () => {
     return year + '-' + month;
   }
 
-  const loadDataFromAsyncStorage = async () => {
-    try {
-       const existingListString = await AsyncStorage.getItem('expensesList');
 
-    if (existingListString) {
-        const existingList = JSON.parse(existingListString);
-
-        // Gruppiere die Daten nach Datum und summiere die Amounts pro Tag auf
-        const groupedData = existingList.reduce((result, item) => {
-          const dateString = item.date;
-          const date = new Date(dateString.split(".").reverse().join("-"));
-
-          if (!result[date]) {
-            result[date] = 0;
-          }
-
-          result[date] += parseFloat(item.amount);
-
-          return result;
-        }, {});
-
-        // Formatieren der Daten für die Barchart
-        const chartData = Object.keys(groupedData).map(date => ({
-          date,
-          amount: groupedData[date],
-        }));
-
-        const sortedData = chartData.sort((a, b) => new Date(a.date) - new Date(b.date));
-        const formattedData = sortedData.map(item => {
-          const formattedDate = new Date(item.date).toLocaleDateString('de-DE'); // Format 'DD.MM.YYYY'
-          return { ...item, date: formattedDate };
-        });
-
-        setData(formattedData);
-      }
-    } catch (error) {
-      console.error('Fehler beim Laden der Daten aus AsyncStorage:', error);
-    }
-  };
 
    const renderLabel1 = () => {
     if (value || isFocus) {
@@ -296,18 +319,55 @@ const Report = () => {
     return null;
   };
 
+  // Funktion, um den täglichen Durchschnitt zu berechnen
+function calculateDailyAverage() {
+  const totalAmount = data.reduce((sum, item) => sum + item.amount, 0);
+  const average = totalAmount / data.length;
+  return parseFloat(average.toFixed(2));
+}
+
+// Funktion, um den wöchentlichen Durchschnitt zu berechnen
+function calculateWeeklyAverage() {
+  const dataWeek = getDataPerWeek();
+  const totalAmount = dataWeek.reduce((sum, item) => sum + item.amount, 0);
+  const average = totalAmount / dataWeek.length;
+  return parseFloat(average.toFixed(2));
+}
+
+// Funktion, um den monatlichen Durchschnitt zu berechnen
+function calculateMonthlyAverage() {
+  const dataMonth = getDataPerMonth();
+  const totalAmount = dataMonth.reduce((sum, item) => sum + item.amount, 0);
+  const average = totalAmount / dataMonth.length;
+  return parseFloat(average.toFixed(2));
+}
+
+// Funktion, um den jährlichen Durchschnitt zu berechnen
+function calculateYearlyAverage() {
+  const dataYear = getDataPerYear();
+  const totalAmount = dataYear.reduce((sum, item) => sum + item.amount, 0);
+  const average = totalAmount / dataYear.length;
+  return parseFloat(average.toFixed(2));
+}
+
+
+
   const getDynamicText = () => {
     if (selectedOption === "day") {
-      return i18n.t('amount_per_date');
+      const average = calculateDailyAverage();
+      return (i18n.t('amount_per_date') + '   ' + ' Ø: ' + average + currencySymbol);
     } 
     else if (selectedOption === "week") {
-      return i18n.t('amount_per_week');
+      const average = calculateWeeklyAverage();
+      return (i18n.t('amount_per_week') + '   ' + ' Ø: ' + average + currencySymbol);
     } 
     else if (selectedOption === "month") {
-      return i18n.t('amount_per_month');
+      const average = calculateMonthlyAverage();
+      return (i18n.t('amount_per_month') + '   ' + ' Ø: ' + average + currencySymbol);
     } 
     else if (selectedOption === "year") {
-      return i18n.t('amount_per_year');
+      const average = calculateYearlyAverage();
+      return (i18n.t('amount_per_year') + '   ' + ' Ø: ' + average + currencySymbol);
     } 
     
     else {
@@ -375,7 +435,7 @@ const Report = () => {
         />
         </ScrollView>
     </View>
-    
+
   </View>
   </ScrollView>
   )

@@ -191,7 +191,7 @@ const New = () => {
       Alert.alert(i18n.t('success'), i18n.t('success_note'));
 
       resetFields();
-      
+
     } catch (error) {
       console.error('Error saving item:', error);
       Alert.alert('Error', 'Failed to save item. Please try again.');
@@ -347,9 +347,12 @@ const New = () => {
         value={inputValues.description}
         onChangeText={(text) => handleInputChange('description', text)}
       />
-        <View style={{ paddingTop: 30 }}></View>
 
-        <View style={dropDownstyle.container}>
+      
+   {/*     <View style={{ paddingTop: 30 }}></View>
+
+      
+       <View style={dropDownstyle.container}>
         {renderLabel2()}
         <Dropdown
           style={[dropDownstyle.dropdown, isFocus && { borderColor: colors.colorDelete }]}
@@ -382,7 +385,7 @@ const New = () => {
             />
           )}
         />
-      </View>
+      </View>*/}
 
       <View style={{ paddingTop: 20 }}></View>
        
