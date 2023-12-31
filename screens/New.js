@@ -17,7 +17,6 @@ import { inputStyle } from '../styles/Inputs';
 import { dropDownstyle } from '../styles/Dropdown';
 
 
-
 const New = () => {
   const [value, setValue] = useState("Select option...");
   const [filteredItems, setFilteredItems] = useState([]);
@@ -29,24 +28,49 @@ const New = () => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const i18n = new I18n(translations);
 
+
   let [locale, setLocale] = useState(Localization.locale);
   locale = locale.substring(0, locale.length - 3);
+  if (locale !== 'de'){
+    locale = 'en';
+  }
   i18n.locale = locale;
-
 
     // This effect will run when the screen gains focus
     useFocusEffect(
       React.useCallback(() => {
-        getLanguage();
+        setLanguage();
+        resetFields();
       }, [])
     );
 
-    async function getLanguage(){
+    function resetFields(){
+      const currentDate = formatDate(new Date());
+      inputValues.date = currentDate;
+      setInputDate(currentDate);
+      setAmount(0);
+       // Zurücksetzen der TextInputs
+      setCounter(0);
+      setValue('Select Category');
+      setInputValues({
+        category: '',
+        name: '',
+        amount: '',
+        description: '',
+        frequency: '',
+        date: ''
+      });
+
+    }
+    async function setLanguage(){
       const storedLanguage = await AsyncStorage.getItem('language');
       if(storedLanguage === "de"){
         setLocale("de-DE");
       }
       else if(storedLanguage === "en"){
+        setLocale("en-EN");
+      }
+      else {
         setLocale("en-EN");
       }
     }
@@ -166,17 +190,8 @@ const New = () => {
       // Benachrichtigung, dass der Vorgang erfolgreich war
       Alert.alert(i18n.t('success'), i18n.t('success_note'));
 
-       // Zurücksetzen der TextInputs
-      setCounter(0);
-      setValue('Select Category');
-      setInputValues({
-        category: '',
-        name: '',
-        amount: '',
-        description: '',
-        frequency: '',
-        date: ''
-      });
+      resetFields();
+      
     } catch (error) {
       console.error('Error saving item:', error);
       Alert.alert('Error', 'Failed to save item. Please try again.');
@@ -290,6 +305,8 @@ const New = () => {
         value={inputValues.name}
         onChangeText={(text) => handleInputChange('name', text)}
       />
+      
+
       <View style={{ paddingTop: 10 }}></View>
 
 

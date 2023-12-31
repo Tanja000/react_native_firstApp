@@ -24,6 +24,9 @@ const Report = () => {
 
   let [locale, setLocale] = useState(Localization.locale);
   locale = locale.substring(0, locale.length - 3);
+  if (locale !== 'de'){
+    locale = 'en';
+  }
   i18n.locale = locale;
 
   // This effect will run when the screen gains focus
@@ -32,19 +35,24 @@ const Report = () => {
       loadDataFromAsyncStorage();
       const currency = loadCurrencyFromStorage();
       updateCurrencySymbol(currency);
-      getLanguage();
+      setLanguage();
     }, [])
   );
 
-  async function getLanguage(){
+  async function setLanguage(){
     const storedLanguage = await AsyncStorage.getItem('language');
+    
     if(storedLanguage === "de"){
       setLocale("de-DE");
     }
     else if(storedLanguage === "en"){
       setLocale("en-EN");
     }
+    else {
+      setLocale("en-EN");
+    }
   }
+
 
   const options = [
     { label: i18n.t('daily'), value: 'day' },

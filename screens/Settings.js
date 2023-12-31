@@ -17,7 +17,7 @@ import { dropDownstyle } from '../styles/Dropdown';
 
 const Settings = ({ navigation }) => {
   const [categories, setCategories] = useState([]);
-  const [newCategory, setNewCategory] = useState('');
+  const [newCategory, setNewCategory] = useState();
   const [data, setData] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [currency, setCurrency] = useState('euro');
@@ -33,9 +33,9 @@ const Settings = ({ navigation }) => {
   useFocusEffect(
       React.useCallback(() => {
         loadCategories();
+        setNewCategory('');
       }, [])
     );
-
 
 
     const renderFlag = () => {
@@ -126,6 +126,7 @@ const Settings = ({ navigation }) => {
         const updatedCategories = [...categories, newCategory];
         setCategories(updatedCategories);
         await AsyncStorage.setItem('categories', JSON.stringify(updatedCategories));
+        setNewCategory('');
         console.log('Category saved successfully.');
       }
     } catch (error) {
@@ -195,6 +196,7 @@ async function deleteCategoryItem(label){
     setModalVisible(false);
   };
 
+
   return (
     <ScrollView>
       <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
@@ -214,8 +216,10 @@ async function deleteCategoryItem(label){
           style={ inputStyle.primary}
           placeholder={i18n.t('enter_new_categories')}
           value={newCategory}
-          onChangeText={(text) => setNewCategory(text)}
+          onChangeText={(text) => setNewCategory(text)} 
+          autoFocus={true}
         />
+      
         <View style={{ paddingTop: 10 }}></View>
 
         <TouchableOpacity onPress={addCategory} style={buttonStyle.button} >
@@ -262,10 +266,7 @@ async function deleteCategoryItem(label){
         </Text>
       </View>
    
- 
-
-         {/* Modal für Bestätigung */}
-      <Modal
+     <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
@@ -312,5 +313,5 @@ export default Settings;
 const styles = StyleSheet.create({
   deleteButton: {
     marginLeft: Dimensions.get("window").width * 0.8
-  },
+  }
 });
