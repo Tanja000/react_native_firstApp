@@ -1,8 +1,8 @@
 import React, { useState} from 'react';
-import { View, Text,  Dimensions, ScrollView} from 'react-native';
+import { View, Text,  Dimensions, ScrollView, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import { BarChart } from 'react-native-chart-kit';
+import { BarChart, PieChart } from 'react-native-chart-kit';
 import * as Localization from 'expo-localization';
 import { I18n } from 'i18n-js';
 import RNPickerSelect from 'react-native-picker-select';
@@ -12,15 +12,22 @@ import { colors } from '../styles/Colors';
 import { textStyle } from '../styles/Text';
 import { barchartStyle } from '../styles/Barchart';
 import { dropDownstyle } from '../styles/Dropdown';
+import { buttonStyle } from '../styles/Buttons';
 
 
 const Report = () => {
   const [data, setData] = useState([]);
+  const [dataPie, setDataPie] = useState([]);
   const [currencySymbol, setCurrencySymbol] = useState('€');
   const [selectedOption, setSelectedOption] = useState('day');
   const i18n = new I18n(translations);
   const [isFocus, setIsFocus] = useState(false);
   const [value, setValue] = useState("Select option...");
+  const [showBarChart, setShowBarChart] = useState(true);
+
+  const toggleChart = () => {
+    setShowBarChart(!showBarChart);
+  };
 
   let [locale, setLocale] = useState(Localization.locale);
   locale = locale.substring(0, locale.length - 3);
@@ -28,6 +35,23 @@ const Report = () => {
     locale = 'en';
   }
   i18n.locale = locale;
+
+
+  // Farbpalette
+const colorPalette = [
+  'rgba(27, 24, 25, 0.8)',
+  'rgba(94, 79, 86, 0.8)',
+  'rgba(157, 135, 147, 0.8)',
+  'rgba(228, 199, 214, 0.8)',
+  'rgba(51, 28, 40, 0.8)',
+  'rgba(108, 61, 85, 0.8)',
+  'rgba(167, 95, 132, 0.8)',
+  'rgba(237, 135, 188, 0.8)',
+  'rgba(43, 6, 25, 0.8)',
+  'rgba(116, 18, 68, 0.8)',
+  'rgba(176, 18, 100, 0.8)',
+  'rgba(176, 18, 100, 0.8)',
+];
 
   // This effect will run when the screen gains focus
   useFocusEffect(
@@ -47,6 +71,7 @@ const Report = () => {
         const existingList = JSON.parse(existingListString);
 
  
+        //Histogramm
         // Gruppiere die Daten nach Datum und summiere die Amounts pro Tag auf
         const groupedData = existingList.reduce((result, item) => {
           const dateString = item.date;
@@ -74,11 +99,34 @@ const Report = () => {
         });
 
         setData(formattedData);
+
+        ///Pie Chart
+        const pieDataList = existingList.reduce((acc, item, index) => {
+          const { category, amount } = item;
+          const color = colorPalette[index % colorPalette.length]; // Wiederhole die Farbpalette
+
+        
+          if (!acc[category]) {
+            acc[category] = { name: category, value: 0, color  };
+          }
+        
+          acc[category].value += parseInt(amount);
+        
+          return acc;
+        }, {});
+
+        const pieDataTransformed = Object.values(pieDataList);
+
+        setDataPie(pieDataTransformed);
+
+
       }
     } catch (error) {
       console.error('Fehler beim Laden der Daten aus AsyncStorage:', error);
     }
   };
+
+  
 
   async function setLanguage(){
     const storedLanguage = await AsyncStorage.getItem('language');
@@ -107,26 +155,6 @@ const Report = () => {
   };
 
 
-  async function getDataForCategory(){
-    const catData = await loadCategoryDataFromAsncStorage();
-    console.log(catData);
-    return {
-      labels: data.map(item => item.date),
-      datasets: [
-        {
-          data: data.map(item => item.amount),
-        },
-      ],
-    };
-    /*return {
-      labels: catData.map(item => item.name),
-      datasets: [
-        {
-          data: catData.map(item => item.amount),
-        },
-      ],
-    };*/
-  }
 
   const getDataForSelectedOption = (selectedOption) => {
     switch (selectedOption) {
@@ -376,69 +404,181 @@ function calculateYearlyAverage() {
   };
 
 
-  return(
-    <ScrollView >
-    <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
 
-      <View style={{ paddingTop: 20 }}></View>
- 
-      <Text style={textStyle.textMain}>{i18n.t('report')}</Text>
+  if (showBarChart) {
+    return (
+      <ScrollView >
+      <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
 
-      <View style={{ paddingTop: 40 }}></View>
+        <View style={{ paddingTop: 20 }}></View>
+  
+        <Text style={textStyle.textMain}>{i18n.t('report')}</Text>
 
-      <View style={dropDownstyle.container}>
-      {renderLabel1()}
-      <RNPickerSelect
-          items={options}
-          placeholder={{}}
-          onValueChange={handleChangeOption}
-          value={selectedOption}
-        />
-      </View>
-      <View style={barchartStyle.container}>
+        <View style={{ paddingTop: 40 }}></View>
 
-        <Text style={barchartStyle.title}> {getDynamicText()}</Text>
-      
-        <ScrollView horizontal={true}>
-        <BarChart
+        <TouchableOpacity onPress={toggleChart} style={buttonStyle.buttonDelete}>
+          <Text style={textStyle.textButton}>
+            {showBarChart ? i18n.t('pie_chart') : i18n.t('bar_chart')}
+          </Text>
+        </TouchableOpacity>
+
+        <View style={{ paddingTop: 40 }}></View>
+
+        <View style={dropDownstyle.container}>
+        {renderLabel1()}
+        <RNPickerSelect
+            items={options}
+            placeholder={{}}
+            onValueChange={handleChangeOption}
+            value={selectedOption}
+          />
+        </View>
+        
+        <View style={barchartStyle.container}>
+
+          <Text style={barchartStyle.title}> {getDynamicText()}</Text>
+        
+          <ScrollView horizontal={true}>
+
+          {showBarChart ? (
+          <BarChart
             data={getDataForSelectedOption(selectedOption)}
-          width={Dimensions.get("window").width} // from react-native
-          height={Dimensions.get("window").height * 0.6}
-        //  formatYLabel={() => yLabelIterator.next().value}
-          verticalLabelRotation={90}
-          yAxisSuffix={currencySymbol}
-          chartConfig={{
-            style: {
-              borderRadius: 0,
+            width={Dimensions.get("window").width} 
+            height={Dimensions.get("window").height * 0.6}
+            verticalLabelRotation={90}
+            yAxisSuffix={currencySymbol}
+            chartConfig={{
+              style: {
+                borderRadius: 0,
+                marginBottom: 30,
+              },
+              backgroundGradientFrom: '#ffffff',
+              backgroundGradientTo: '#ffffff',
+              color: (opacity = 1) => colors.backgroundThird,
+              labelColor: (opacity = 1) => colors.primaryText,
+              propsForBackgroundLines: {
+                strokeWidth: 1,
+                stroke: '#efefef',
+                strokeDasharray: '0',
+              },
+              decimalPlaces: 0, // Anzahl der Dezimalstellen auf der Y-Achse
+            }}
+            bezier
+            style={{
+              marginVertical: 8,
+              borderRadius: 16,
               marginBottom: 30,
-            },
-            backgroundGradientFrom: '#ffffff',
-            backgroundGradientTo: '#ffffff',
-            color: (opacity = 1) => colors.backgroundThird,
-            labelColor: (opacity = 1) => colors.primaryText,
-            propsForBackgroundLines: {
-              strokeWidth: 1,
-              stroke: '#efefef',
-              strokeDasharray: '0',
-            },
-           // horizontalLinesAtIntervals: 4, // Anzahl der horizontalen Linien im Gitter
-            decimalPlaces: 0, // Anzahl der Dezimalstellen auf der Y-Achse
-          }}
-          bezier
-          style={{
-            marginVertical: 8,
-            borderRadius: 16,
-            marginBottom: 30,
-          }}
-          fromZero={true}
-          showValuesOnTopOfBars={true}
-        />
-        </ScrollView>
-    </View>
+            }}
+            fromZero={true}
+            showValuesOnTopOfBars={true}
+          />
+          ) : (
+          <PieChart
+            data={dataPie}
+            width={300}
+            height={200}
+            chartConfig={{
+              backgroundGradientFrom: '#1E2923',
+              backgroundGradientTo: '#08130D',
+              color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+            }}
+            coverRadius={0.45}
+            coverFill={'#FFF'}
+            accessor="value"
+            backgroundColor="transparent"
+            paddingLeft="15"
+            absolute
+          />
+        )}
 
-  </View>
-  </ScrollView>
-  )
+        
+        </ScrollView>
+      </View>
+
+    </View>
+    </ScrollView>
+    )
+  }
+
+  else {
+    return (
+      <ScrollView >
+      <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
+
+        <View style={{ paddingTop: 20 }}></View>
+  
+        <Text style={textStyle.textMain}>{i18n.t('report')}</Text>
+
+        <View style={{ paddingTop: 40 }}></View>
+
+        <TouchableOpacity onPress={toggleChart} style={buttonStyle.buttonDelete}>
+          <Text style={textStyle.textButton}>
+            {showBarChart ? i18n.t('pie_chart') : i18n.t('bar_chart')}
+          </Text>
+        </TouchableOpacity>
+
+        <View style={{ paddingTop: 40 }}></View>
+        
+        <View style={barchartStyle.container}>        
+          <ScrollView horizontal={true}>
+
+          {showBarChart ? (
+          <BarChart
+            data={getDataForSelectedOption(selectedOption)}
+            width={Dimensions.get("window").width} 
+            height={Dimensions.get("window").height * 0.6}
+            verticalLabelRotation={90}
+            yAxisSuffix={currencySymbol}
+            chartConfig={{
+              style: {
+                borderRadius: 0,
+                marginBottom: 30,
+              },
+              backgroundGradientFrom: '#ffffff',
+              backgroundGradientTo: '#ffffff',
+              color: (opacity = 1) => colors.backgroundThird,
+              labelColor: (opacity = 1) => colors.primaryText,
+              propsForBackgroundLines: {
+                strokeWidth: 1,
+                stroke: '#efefef',
+                strokeDasharray: '0',
+              },
+              decimalPlaces: 0, // Anzahl der Dezimalstellen auf der Y-Achse
+            }}
+            bezier
+            style={{
+              marginVertical: 8,
+              borderRadius: 16,
+              marginBottom: 30,
+            }}
+            fromZero={true}
+            showValuesOnTopOfBars={true}
+          />
+          ) : (
+          <PieChart
+            data={dataPie}
+            width={300}
+            height={200}
+
+            chartConfig={{
+              backgroundGradientFrom: '#1E2923',
+              backgroundGradientTo: '#08130D',
+              color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+            }}
+            accessor="value"
+            backgroundColor="transparent"
+            paddingLeft="15"
+            absolute
+          />
+        )}
+        </ScrollView>
+      </View>
+
+    </View>
+    </ScrollView>
+    )
+  }
+
 };
 
 

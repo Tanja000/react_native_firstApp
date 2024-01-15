@@ -105,6 +105,7 @@ const Settings = ({ navigation }) => {
     }
   };
 
+ 
 
   const saveCategories = async (newCategory) => {
     try {
@@ -201,7 +202,7 @@ async function deleteCategoryItem(label){
     <ScrollView>
       <View style={{ padding: 20, backgroundColor: colors.backgroundPrimary }}>
       <View style={{ paddingTop: 20 }}></View>
-        <Text style={textStyle.textMain}>{i18n.t('categories')}</Text>
+        <Text style={textStyle.textMain}>{i18n.t('settings')}</Text>
         
 
         <TouchableOpacity onPress={handleDeletePress} style={styles.deleteButton}>
@@ -241,7 +242,10 @@ async function deleteCategoryItem(label){
 
       
       <View style={dropDownstyle.container}>
-        <Text style={textStyle.textSmall}>{i18n.t('select_language_and_currency')}</Text>
+        <Text style={textStyle.textSmall}>{i18n.t('select_language') + ' '} {renderFlag()} {i18n.t('and_currency') + ' ' }
+           {renderCurrencySymbol()}
+        </Text>
+
         <Picker
           selectedValue={i18n.locale}
           style={dropDownstyle.container}
@@ -259,11 +263,7 @@ async function deleteCategoryItem(label){
           <Picker.Item style={textStyle.textSmall} label="Dollar" value="dollar" />
         </Picker>
         
-        <Text style={textStyle.textSmall}>
-           {renderFlag()}
-            ...
-           {renderCurrencySymbol()}
-        </Text>
+       
       </View>
    
      <Modal

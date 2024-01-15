@@ -3,12 +3,13 @@ const translations = {
     en : {
         expenses: "Expenses",
         report : "Report",
-        new : "New",
+        new : "Add Expense",
         settings: "Settings",
         categories: "Categories",
         enter_new_categories: "enter a new category",
         add_category : "ADD CATEGORY",
-        select_language_and_currency : "Select Language and Currency:",
+        select_language: "Select Language ",
+        and_currency : " and Currency ",
         german: "German",
         english: "English",
         sure_delete: "Are you sure you want to delete?",
@@ -41,18 +42,21 @@ const translations = {
         KW: "CW",
         success: "success",
         success_note: "Item added to the list successfully.",
-        missing_field: "Please fill in all fields before submitting."
+        missing_field: "Please fill in all fields before submitting.",
+        pie_chart: "Show Donat",
+        bar_chart: "Show Histogram"
     },
 
     de :{
         expenses: "Ausgaben",
         report : "Berichte",
-        new : "Neu",
+        new : "Ausgabe hinzufügen",
         settings: "Einstellungen",
         categories: "Kategorien",
         enter_new_categories : "gib eine neue Kategorie ein",
         add_category : " KATEGORIE HINZUFÜGEN",
-        select_language_and_currency : "Wähle Sprache und Währung:",
+        select_language : "Wähle Sprache ",
+        and_currency : " und Währung ",
         german: "Deutsch",
         english: "Englisch",
         sure_delete: "Daten wirklich löschen?",
@@ -85,7 +89,9 @@ const translations = {
         KW: "KW",
         success: "Erfolg!",
         success_note: "Ausgabe erfolgreich hinzugefügt!",
-        missing_field: "Bitte fülle das fehlende Feld aus!"
+        missing_field: "Bitte fülle das fehlende Feld aus!",
+        pie_chart: "Zeige Kuchendiagramm",
+        bar_chart: "Zeige Histogramm"
     }
 
 }
